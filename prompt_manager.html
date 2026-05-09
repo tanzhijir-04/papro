@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23cc785c'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia,serif' font-size='36' font-weight='bold' fill='white'%3EP%3C/text%3E%3C/svg%3E">
+<style>
+/* ── Anthropic Design Tokens ── */
+:root {
+  --an-primary: #cc785c;
+  --an-primary-active: #a9583e;
+  --an-primary-disabled: #e6dfd8;
+  --an-accent-teal: #5db8a6;
+  --an-accent-amber: #e8a55a;
+  --an-canvas: #faf9f5;
+  --an-surface-soft: #f5f0e8;
+  --an-surface-card: #efe9de;
+  --an-surface-cream-strong: #e8e0d2;
+  --an-surface-dark: #181715;
+  --an-surface-dark-elevated: #252320;
+  --an-surface-dark-soft: #1f1e1b;
+  --an-hairline: #e6dfd8;
+  --an-hairline-soft: #ebe6df;
+  --an-ink: #141413;
+  --an-body-strong: #252523;
+  --an-body: #3d3d3a;
+  --an-muted: #6c6a64;
+  --an-muted-soft: #8e8b82;
+  --an-on-primary: #ffffff;
+  --an-on-dark: #faf9f5;
+  --an-on-dark-soft: #a09d96;
+  --an-success: #5db872;
+  --an-warning: #d4a017;
+  --an-error: #c64545;
+}
+
+/* ── Dark Mode Tokens ── */
+html.dark {
+  --an-canvas: #181715;
+  --an-surface-soft: #1f1e1b;
+  --an-surface-card: #252320;
+  --an-surface-cream-strong: #332f2a;
+  --an-hairline: #332f2a;
+  --an-hairline-soft: #2a2825;
+  --an-ink: #faf9f5;
+  --an-body-strong: #e8e4de;
+  --an-body: #ccc8c0;
+  --an-muted: #9e9a92;
+  --an-muted-soft: #7a776f;
+  --an-on-primary: #ffffff;
+  --an-on-dark: #faf9f5;
+  --an-on-dark-soft: #a09d96;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  color: var(--an-body);
+  background: var(--an-canvas);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes slideReveal {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pillPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.anim-fade-up {
+  animation: fadeUp 0.4s ease both;
+}
+.anim-fade-in {
+  animation: fadeIn 0.35s ease both;
+}
+.anim-scale-in {
+  animation: scaleIn 0.3s ease both;
+}
+
+/* stagger children */
+.stagger > *:nth-child(1) { animation-delay: 0ms; }
+.stagger > *:nth-child(2) { animation-delay: 50ms; }
+.stagger > *:nth-child(3) { animation-delay: 100ms; }
+.stagger > *:nth-child(4) { animation-delay: 150ms; }
+.stagger > *:nth-child(5) { animation-delay: 200ms; }
+.stagger > *:nth-child(6) { animation-delay: 250ms; }
+
+/* ── Typography ── */
+h2 {
+  font-family: 'Cormorant Garamond', Garamond, 'Times New Roman', serif;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--an-ink);
+  line-height: 1.15;
+}
+h3 {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--an-ink);
+  margin-bottom: 8px;
+}
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--an-muted);
+  display: block;
+  margin-bottom: 6px;
+  letter-spacing: 0.01em;
+}
+
+/* ── Inputs ── */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--an-ink);
+  background: var(--an-canvas);
+  border: 1px solid var(--an-hairline);
+  border-radius: 8px;
+  padding: 10px 14px;
+  height: 40px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+  outline: none;
+}
+textarea {
+  height: auto;
+  min-height: 80px;
+  resize: vertical;
+  line-height: 1.6;
+}
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236c6a64' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--an-primary);
+  box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.15);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--an-muted-soft);
+}
+
+/* ── Cards ── */
+.card {
+  background: var(--an-surface-card);
+  border: none;
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 16px;
+  transition: background 0.3s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  box-shadow: 0 2px 8px rgba(20, 20, 19, 0.04);
+}
+html.dark .card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Grids ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.field { margin-bottom: 16px; }
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+.badge-a {
+  background: rgba(204, 120, 92, 0.12);
+  color: var(--an-primary);
+}
+html.dark .badge-a {
+  background: rgba(204, 120, 92, 0.18);
+}
+.badge-b {
+  background: rgba(93, 184, 166, 0.14);
+  color: #3a9a86;
+}
+html.dark .badge-b {
+  background: rgba(93, 184, 166, 0.18);
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  background: var(--an-surface-soft);
+  padding: 4px;
+  border-radius: 12px;
+  transition: background 0.3s ease;
+}
+.tab {
+  flex: 1;
+  padding: 10px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  color: var(--an-muted);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+}
+.tab.active {
+  background: var(--an-canvas);
+  color: var(--an-ink);
+  box-shadow: 0 1px 4px rgba(20, 20, 19, 0.1);
+}
+html.dark .tab.active {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+}
+.tab:hover:not(.active) {
+  color: var(--an-body-strong);
+  background: rgba(0,0,0,0.03);
+}
+html.dark .tab:hover:not(.active) {
+  background: rgba(255,255,255,0.04);
+}
+.tab i { font-size: 16px; }
+.tab-underline {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--an-primary);
+  border-radius: 1px;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tab.active .tab-underline {
+  width: 24px;
+}
+
+/* ── Section Titles ── */
+.section-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--an-muted-soft);
+  margin-bottom: 16px;
+}
+
+/* ── Outline List ── */
+.outline-list {
+  list-style: none;
+  margin-top: 12px;
+}
+.outline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--an-hairline);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  background: var(--an-canvas);
+  cursor: default;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, opacity 0.2s ease, background 0.3s ease;
+  user-select: none;
+  animation: fadeUp 0.35s ease both;
+}
+.outline-item:hover {
+  border-color: var(--an-surface-cream-strong);
+  box-shadow: 0 1px 4px rgba(20, 20, 19, 0.05);
+}
+html.dark .outline-item:hover {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+.outline-item.dragging {
+  opacity: 0.4;
+  cursor: grabbing;
+  transform: scale(0.98);
+}
+.outline-item.drag-over {
+  border-color: var(--an-primary);
+  border-style: dashed;
+  box-shadow: 0 0 0 3px rgba(204, 120, 92, 0.1);
+  transform: scale(1.01);
+}
+.outline-item .drag-handle {
+  color: var(--an-muted-soft);
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  cursor: grab;
+  transition: color 0.15s ease;
+  touch-action: none;
+}
+.outline-item:hover .drag-handle {
+  color: var(--an-muted);
+}
+.outline-item .item-body { flex: 1; min-width: 0; }
+.outline-item .item-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--an-ink);
+  transition: color 0.3s ease;
+}
+.outline-item .item-meta {
+  font-size: 12px;
+  color: var(--an-muted);
+  margin-top: 2px;
+}
+.outline-item .item-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.outline-item .act-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  color: var(--an-muted-soft);
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.outline-item .act-btn:hover {
+  color: var(--an-error);
+  background: rgba(198, 69, 69, 0.08);
+  transform: scale(1.1);
+}
+
+/* ── Word Bar ── */
+.word-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--an-surface-soft);
+  margin-top: 8px;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+.word-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--an-primary);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Total Row ── */
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--an-surface-soft);
+  font-size: 13px;
+  margin-top: 12px;
+  transition: background 0.3s ease;
+}
+.total-num {
+  font-weight: 600;
+  font-size: 15px;
+  font-family: 'Inter', sans-serif;
+  transition: color 0.3s ease;
+}
+
+/* ── Add Section ── */
+.add-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.add-section input { flex: 1; }
+.add-section select { width: 110px; flex-shrink: 0; }
+
+/* ── Generate Button ── */
+.generate-btn {
+  width: 100%;
+  padding: 14px 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--an-primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--an-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.2s ease, transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+  margin-top: 16px;
+  letter-spacing: 0.01em;
+  position: relative;
+  overflow: hidden;
+}
+.generate-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.generate-btn:hover {
+  background: var(--an-primary-active);
+  box-shadow: 0 4px 16px rgba(204, 120, 92, 0.3);
+}
+.generate-btn:hover::after {
+  opacity: 1;
+  animation: shimmer 1.5s ease infinite;
+}
+.generate-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 2px 8px rgba(204, 120, 92, 0.2);
+}
+.generate-btn i { font-size: 18px; }
+
+/* ── Output Box (Dark Surface) ── */
+.output-box {
+  background: var(--an-surface-dark);
+  border: none;
+  border-radius: 12px;
+  padding: 24px;
+  font-size: 13px;
+  line-height: 1.75;
+  white-space: pre-wrap;
+  font-family: 'SFMono-Regular', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 20px;
+  word-break: break-all;
+  color: var(--an-on-dark-soft);
+  animation: scaleIn 0.35s ease both;
+}
+.output-box::-webkit-scrollbar { width: 6px; }
+.output-box::-webkit-scrollbar-track { background: transparent; }
+.output-box::-webkit-scrollbar-thumb {
+  background: var(--an-surface-dark-elevated);
+  border-radius: 3px;
+}
+
+/* ── Copy Row ── */
+.copy-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+  animation: fadeIn 0.3s ease 0.15s both;
+}
+.copy-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border: 1px solid var(--an-hairline);
+  border-radius: 8px;
+  background: var(--an-canvas);
+  cursor: pointer;
+  color: var(--an-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+.copy-btn:hover {
+  background: var(--an-surface-card);
+  color: var(--an-ink);
+  border-color: var(--an-surface-cream-strong);
+  transform: translateY(-1px);
+}
+.copy-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+.copy-btn i { font-size: 14px; }
+
+/* ── Pills ── */
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.pill {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  border: 1px solid var(--an-hairline);
+  cursor: pointer;
+  color: var(--an-muted);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--an-canvas);
+  letter-spacing: 0.01em;
+}
+.pill:hover {
+  border-color: var(--an-surface-cream-strong);
+  color: var(--an-body-strong);
+  transform: translateY(-1px);
+}
+.pill:active {
+  transform: scale(0.95);
+}
+.pill.selected {
+  background: var(--an-primary);
+  color: var(--an-on-primary);
+  border-color: transparent;
+  animation: pillPop 0.3s ease;
+}
+
+/* ── Range ── */
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.range-row input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  outline: none;
+}
+/* WebKit: filled portion is painted via inline gradient by paintRange() */
+.range-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--an-primary);
+  cursor: pointer;
+  border: 2px solid var(--an-canvas);
+  box-shadow: 0 1px 4px rgba(20, 20, 19, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  margin-top: -6px;
+}
+.range-row input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 8px rgba(204, 120, 92, 0.3);
+}
+/* Firefox: filled portion */
+.range-row input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--an-surface-soft);
+}
+.range-row input[type="range"]::-moz-range-progress {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--an-primary);
+}
+.range-row input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--an-primary);
+  cursor: pointer;
+  border: 2px solid var(--an-canvas);
+  box-shadow: 0 1px 4px rgba(20, 20, 19, 0.2);
+}
+/* Dark mode thumb */
+html.dark .range-row input[type="range"]::-webkit-slider-thumb {
+  border-color: var(--an-surface-dark);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+html.dark .range-row input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 2px 8px rgba(204, 120, 92, 0.4);
+}
+html.dark .range-row input[type="range"]::-moz-range-thumb {
+  border-color: var(--an-surface-dark);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.range-val {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 56px;
+  text-align: right;
+  color: var(--an-ink);
+  transition: color 0.3s ease;
+}
+
+/* ── Warn ── */
+.warn {
+  font-size: 12px;
+  color: var(--an-warning);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* ── Version Hints ── */
+.version-hint {
+  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-top: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+  animation: fadeUp 0.3s ease both;
+}
+.version-hint i { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.version-hint-a {
+  background: rgba(204, 120, 92, 0.1);
+  color: var(--an-primary);
+}
+.version-hint-b {
+  background: rgba(93, 184, 166, 0.12);
+  color: #3a9a86;
+}
+
+/* ── Check List ── */
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--an-hairline-soft);
+  transition: border-color 0.3s ease;
+}
+.check-item:last-child { border-bottom: none; }
+.check-icon { font-size: 16px; flex-shrink: 0; }
+.check-label { color: var(--an-muted); transition: color 0.3s ease; }
+.check-val { flex: 1; text-align: right; font-size: 12px; color: var(--an-ink); transition: color 0.3s ease; }
+
+/* ── Type Label Tags ── */
+.type-tag {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: var(--an-surface-soft);
+  color: var(--an-muted);
+  letter-spacing: 0.02em;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ── Required Star ── */
+.req {
+  color: var(--an-error);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--an-surface-cream-strong); border-radius: 3px; }
+
+/* ── Dark Mode Toggle ── */
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid var(--an-hairline);
+  background: var(--an-canvas);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--an-muted);
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  color: var(--an-ink);
+  border-color: var(--an-surface-cream-strong);
+  transform: rotate(15deg);
+}
+.theme-toggle:active {
+  transform: scale(0.9) rotate(15deg);
+}
+html.dark .theme-toggle .icon-sun { display: inline; }
+html.dark .theme-toggle .icon-moon { display: none; }
+html:not(.dark) .theme-toggle .icon-sun { display: none; }
+html:not(.dark) .theme-toggle .icon-moon { display: inline; }
+
+/* ── Footer ── */
+.dev-footer {
+  text-align: center;
+  padding: 32px 0 20px;
+  font-size: 12px;
+  color: var(--an-muted-soft);
+  border-top: 1px solid var(--an-hairline-soft);
+  margin-top: 32px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.dev-footer a {
+  color: var(--an-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+.dev-footer a:hover {
+  color: var(--an-primary-active);
+  text-decoration: underline;
+}
+.dev-footer .dev-name {
+  font-weight: 600;
+  color: var(--an-muted);
+}
+
+/* ── Tab Panel Transitions ── */
+.tab-panel {
+  animation: fadeUp 0.3s ease both;
+}
+</style>
+</head>
+<body>
+<h2 class="sr-only" aria-label="中文学术论文提示词管理器"></h2>
+<div style="padding:20px 0; max-width: 680px; margin: 0 auto;">
+
+<!-- Header -->
+<div class="anim-fade-up" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;">
+  <div>
+    <h2 style="margin-bottom:4px;">学术论文提示词管理器</h2>
+    <div style="font-size:14px;color:var(--an-muted);transition:color 0.3s ease;">配置参数 · 管理大纲 · 生成提示词</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <span class="badge badge-a"><i class="ti ti-file-text" aria-hidden="true"></i>版本 A</span>
+    <span class="badge badge-b"><i class="ti ti-file" aria-hidden="true"></i>版本 B</span>
+    <button class="theme-toggle" onclick="toggleTheme()" title="切换深色/浅色模式" aria-label="切换深色模式">
+      <i class="ti ti-moon icon-moon" aria-hidden="true"></i>
+      <i class="ti ti-sun icon-sun" aria-hidden="true"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs anim-fade-up" style="animation-delay:60ms;">
+  <button class="tab active" onclick="switchTab('params',this)"><i class="ti ti-settings" aria-hidden="true"></i> 论文参数</button>
+  <button class="tab" onclick="switchTab('outline',this)"><i class="ti ti-list" aria-hidden="true"></i> 大纲管理</button>
+  <button class="tab" onclick="switchTab('output',this)"><i class="ti ti-code" aria-hidden="true"></i> 生成提示词</button>
+</div>
+
+<!-- ═══════ TAB 1: 参数 ═══════ -->
+<div id="tab-params" class="tab-panel stagger">
+
+<!-- 基本信息 -->
+<div class="card anim-fade-up">
+  <div class="section-title">基本信息</div>
+  <div class="grid2">
+    <div class="field">
+      <label>论文题目</label>
+      <input type="text" id="title" placeholder="例：数字经济背景下平台劳动关系认定研究" oninput="autosave()">
+    </div>
+    <div class="field">
+      <label>提交 / 投稿场合</label>
+      <input type="text" id="venue" placeholder="例：期末课程作业 / 投稿《中国法学》" oninput="autosave()">
+    </div>
+  </div>
+  <div class="grid3">
+    <div class="field">
+      <label>论文类型</label>
+      <select id="paperType" onchange="toggleCustomPaperType();autosave()">
+        <option value="课程论文">课程论文</option>
+        <option value="毕业论文">毕业论文</option>
+        <option value="学位论文">学位论文</option>
+        <option value="期刊投稿">期刊投稿</option>
+        <option value="会议论文">会议论文</option>
+        <option value="综述">综述</option>
+        <option value="__custom__">自定义…</option>
+      </select>
+      <input type="text" id="paperTypeCustom" placeholder="请输入自定义论文类型" style="margin-top:8px;display:none" oninput="autosave()">
+    </div>
+    <div class="field">
+      <label>参考文献格式</label>
+      <select id="citationFmt" onchange="autosave()">
+        <option value="GB/T 7714-2015">GB/T 7714-2015（默认）</option>
+        <option value="APA 7th">APA 7th</option>
+        <option value="MLA 9th">MLA 9th</option>
+        <option value="Chicago">Chicago</option>
+        <option value="自定义">自定义</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>版本选择</label>
+      <select id="version" onchange="toggleVersionHint();autosave()">
+        <option value="A">版本 A（自提供文献）</option>
+        <option value="B">版本 B（不提供文献）</option>
+      </select>
+    </div>
+  </div>
+  <div id="version-hint-a" class="version-hint version-hint-a">
+    <i class="ti ti-info-circle" aria-hidden="true"></i>
+    <span>版本 A：AI 只能引用你提供的文献，不会虚构来源。生成后请在"文献"区填写。</span>
+  </div>
+  <div id="version-hint-b" class="version-hint version-hint-b" style="display:none">
+    <i class="ti ti-info-circle" aria-hidden="true"></i>
+    <span>版本 B：AI 基于训练知识写作，参考文献附确定性标注，需用户核实。</span>
+  </div>
+</div>
+
+<!-- 学科与研究方向 -->
+<div class="card anim-fade-up">
+  <div class="section-title">学科与研究方向</div>
+  <div class="field">
+    <label>一级学科</label>
+    <div class="pill-row" id="discipline-pills">
+      <span class="pill" onclick="selectPill(this,'discipline')">法学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">经济学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">教育学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">理学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">工学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">农学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">医学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">管理学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">文学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">历史学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">哲学</span>
+      <span class="pill" onclick="selectPill(this,'discipline')">计算机科学</span>
+    </div>
+    <input type="text" id="discipline" placeholder="或直接输入学科名称" style="margin-top:10px" oninput="autosave()">
+  </div>
+  <div class="field">
+    <label>研究方向（二级）</label>
+    <input type="text" id="researchDir" placeholder="例：刑法学 / 行为经济学 / 高分子材料" oninput="autosave()">
+  </div>
+  <div class="field">
+    <label>目标读者</label>
+    <select id="audience" onchange="toggleCustomAudience();autosave()">
+      <option value="课程任课教师">课程任课教师</option>
+      <option value="同专业本科生">同专业本科生</option>
+      <option value="期刊审稿专家">期刊审稿专家</option>
+      <option value="学位论文答辩委员会">学位论文答辩委员会</option>
+      <option value="会议同行评审">会议同行评审</option>
+      <option value="__custom__">自定义…</option>
+    </select>
+    <input type="text" id="audienceCustom" placeholder="请输入自定义目标读者" style="margin-top:8px;display:none" oninput="autosave()">
+  </div>
+</div>
+
+<!-- 核心内容 -->
+<div class="card anim-fade-up">
+  <div class="section-title">核心内容</div>
+  <div class="field">
+    <label>核心论点 <span class="req">必填</span></label>
+    <textarea id="coreArg" rows="3" placeholder="用 1-3 句话说明论文想要论证或探讨的核心观点。这是整篇论文的主心骨，请认真填写。" oninput="autosave()"></textarea>
+  </div>
+  <div class="field">
+    <label>研究问题（可选）</label>
+    <input type="text" id="researchQ" placeholder="例：本文探讨 X 条件下 Y 现象的成因及影响机制" oninput="autosave()">
+  </div>
+  <div class="field">
+    <label>写作风格倾向</label>
+    <div class="pill-row" id="style-pills">
+      <span class="pill" onclick="selectPill(this,'writingStyle')">理论推导</span>
+      <span class="pill" onclick="selectPill(this,'writingStyle')">案例分析</span>
+      <span class="pill" onclick="selectPill(this,'writingStyle')">数据实证</span>
+      <span class="pill" onclick="selectPill(this,'writingStyle')">比较研究</span>
+      <span class="pill" onclick="selectPill(this,'writingStyle')">文献综述</span>
+    </div>
+    <input type="hidden" id="writingStyle">
+  </div>
+  <div class="field">
+    <label>特殊限制（可选）</label>
+    <input type="text" id="constraint" placeholder="例：不得使用第一人称 / 须包含实证数据分析一节" oninput="autosave()">
+  </div>
+</div>
+
+</div>
+
+<!-- ═══════ TAB 2: 大纲 ═══════ -->
+<div id="tab-outline" style="display:none" class="tab-panel">
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+    <div>
+      <div style="font-weight:600;font-size:16px;color:var(--an-ink);transition:color 0.3s ease;">字数规划</div>
+      <div style="font-size:12px;color:var(--an-muted);margin-top:2px;transition:color 0.3s ease;">拖动滑块设定论文总字数</div>
+    </div>
+    <div class="range-val" id="total-words-display">3,000 字</div>
+  </div>
+  <div class="range-row">
+    <span style="font-size:12px;color:var(--an-muted-soft);">1,000</span>
+    <input type="range" id="totalWords" min="1000" max="15000" step="500" value="3000" oninput="updateTotalWords();distributeWords()">
+    <span style="font-size:12px;color:var(--an-muted-soft);">15,000</span>
+  </div>
+</div>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+    <div style="font-weight:600;font-size:16px;color:var(--an-ink);transition:color 0.3s ease;">论文大纲</div>
+    <span style="font-size:12px;color:var(--an-muted-soft);">拖拽排序 · 滑块调节字数</span>
+  </div>
+
+  <ul class="outline-list" id="outline-list"></ul>
+
+  <div class="total-row">
+    <span style="color:var(--an-muted);font-size:13px;">已分配字数</span>
+    <span class="total-num" id="allocated-total">0 / 3,000 字</span>
+  </div>
+
+  <div class="add-section" style="margin-top:14px;">
+    <input type="text" id="new-section-name" placeholder="新增章节名称（例：案例分析）">
+    <select id="new-section-type">
+      <option value="body">主体章节</option>
+      <option value="intro">引言</option>
+      <option value="abstract">摘要</option>
+      <option value="conclusion">结论</option>
+    </select>
+    <button class="copy-btn" onclick="addSection()" style="flex-shrink:0;"><i class="ti ti-plus" aria-hidden="true"></i> 添加</button>
+  </div>
+</div>
+
+</div>
+
+<!-- ═══════ TAB 3: 输出 ═══════ -->
+<div id="tab-output" style="display:none" class="tab-panel">
+
+<div class="card">
+  <div style="font-weight:600;font-size:16px;color:var(--an-ink);margin-bottom:12px;transition:color 0.3s ease;">生成配置检查</div>
+  <div id="check-list"></div>
+</div>
+
+<button class="generate-btn" onclick="generatePrompt()">
+  <i class="ti ti-wand" aria-hidden="true"></i> 生成完整提示词
+</button>
+
+<div id="output-area" style="display:none">
+  <div class="output-box" id="output-box"></div>
+  <div class="copy-row">
+    <button class="copy-btn" onclick="copyOutput()"><i class="ti ti-copy" aria-hidden="true"></i> 复制全部</button>
+    <button class="copy-btn" onclick="sendToChat()" style="background:var(--an-primary);color:var(--an-on-primary);border-color:var(--an-primary);"><i class="ti ti-send" aria-hidden="true"></i> 发送给 Claude</button>
+  </div>
+</div>
+
+</div>
+
+<!-- Developer Footer -->
+<div class="dev-footer anim-fade-up" style="animation-delay:300ms;">
+  <span>Designed & built by </span>
+  <a href="https://github.com/tanzhijir-04" target="_blank" rel="noopener noreferrer" class="dev-name">tanzhijir-04</a>
+  <span> · </span>
+  <a href="https://github.com/tanzhijir-04" target="_blank" rel="noopener noreferrer">
+    <i class="ti ti-brand-github" style="font-size:14px;vertical-align:middle;"></i>
+  </a>
+</div>
+
+</div>
+
+<script>
+// ── Dark Mode ──
+function toggleTheme() {
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  localStorage.setItem('an-theme', isDark ? 'dark' : 'light');
+}
+(function initTheme() {
+  const saved = localStorage.getItem('an-theme');
+  if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+  }
+})();
+
+// ── Data ──
+const DEFAULT_SECTIONS = [
+  {id:'s1',name:'摘要',type:'abstract',words:250,locked:true},
+  {id:'s2',name:'引言',type:'intro',words:400,locked:false},
+  {id:'s3',name:'研究背景与文献综述',type:'body',words:600,locked:false},
+  {id:'s4',name:'核心论点展开',type:'body',words:900,locked:false},
+  {id:'s5',name:'案例分析 / 实证',type:'body',words:600,locked:false},
+  {id:'s6',name:'结论',type:'conclusion',words:250,locked:false},
+];
+
+let sections = JSON.parse(JSON.stringify(DEFAULT_SECTIONS));
+let dragSrc = null;
+let dragAllowed = false;
+
+// ── Tabs ──
+function switchTab(name, btn) {
+  const panels = ['params','outline','output'];
+  panels.forEach(t => {
+    const el = document.getElementById('tab-'+t);
+    if (t === name) {
+      el.style.display = 'block';
+      el.classList.remove('tab-panel');
+      void el.offsetWidth;
+      el.classList.add('tab-panel');
+    } else {
+      el.style.display = 'none';
+    }
+  });
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='output') buildCheckList();
+}
+
+// ── Version Hints ──
+function toggleVersionHint() {
+  const v = document.getElementById('version').value;
+  document.getElementById('version-hint-a').style.display = v==='A'?'flex':'none';
+  document.getElementById('version-hint-b').style.display = v==='B'?'flex':'none';
+}
+
+// ── Custom Audience ──
+function toggleCustomAudience() {
+  const sel = document.getElementById('audience');
+  const custom = document.getElementById('audienceCustom');
+  if (sel.value === '__custom__') {
+    custom.style.display = 'block';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+  }
+}
+
+// ── Custom Paper Type ──
+function toggleCustomPaperType() {
+  const sel = document.getElementById('paperType');
+  const custom = document.getElementById('paperTypeCustom');
+  if (sel.value === '__custom__') {
+    custom.style.display = 'block';
+    custom.focus();
+  } else {
+    custom.style.display = 'none';
+  }
+}
+
+// ── Pills ──
+function selectPill(el, field) {
+  const container = el.closest('.pill-row');
+  container.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');
+  const inp = document.getElementById(field);
+  if(inp) inp.value = el.textContent.trim();
+  autosave();
+}
+
+// ── Total Words ──
+function updateTotalWords() {
+  const v = parseInt(document.getElementById('totalWords').value);
+  document.getElementById('total-words-display').textContent = v.toLocaleString() + ' 字';
+  paintRange(document.getElementById('totalWords'));
+}
+
+// ── Distribute Words ──
+function distributeWords() {
+  const total = parseInt(document.getElementById('totalWords').value);
+  const ratios = {abstract:0.08,intro:0.13,body:0.6,conclusion:0.09};
+  const bodyCount = sections.filter(s=>s.type==='body').length||1;
+  sections.forEach(s=>{
+    if(s.type==='body') s.words = Math.round(total * ratios.body / bodyCount);
+    else s.words = Math.round(total * (ratios[s.type]||0.1));
+  });
+  renderOutline();
+}
+
+// ── Render Outline ──
+function renderOutline() {
+  const total = parseInt(document.getElementById('totalWords').value);
+  const list = document.getElementById('outline-list');
+  list.innerHTML = '';
+  let allocated = 0;
+  sections.forEach((s,i) => {
+    allocated += s.words;
+    const pct = Math.min(100, Math.round(s.words/total*100));
+    const typeLabel = {abstract:'摘要',intro:'引言',body:'主体',conclusion:'结论'}[s.type]||'章节';
+    const li = document.createElement('li');
+    li.className='outline-item';
+    li.draggable=true;
+    li.dataset.id=s.id;
+    li.style.animationDelay = (i * 50) + 'ms';
+    li.innerHTML=`
+      <span class="drag-handle"><i class="ti ti-grip-vertical" aria-hidden="true"></i></span>
+      <div class="item-body">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="item-name">${i+1}. ${s.name}</span>
+          <span class="type-tag">${typeLabel}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px;">
+          <input type="range" min="100" max="${Math.round(total*0.7)}" step="50" value="${s.words}"
+            style="flex:1;" oninput="updateSectionWords('${s.id}',this.value)">
+          <span style="font-size:13px;font-weight:600;min-width:56px;text-align:right;color:var(--an-ink);transition:color 0.3s ease;">${s.words.toLocaleString()} 字</span>
+          <span style="font-size:12px;color:var(--an-muted-soft);min-width:32px;text-align:right;">${pct}%</span>
+        </div>
+        <div class="word-bar"><div class="word-bar-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="item-actions">
+        <button class="act-btn" onclick="removeSection('${s.id}')" title="删除"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>`;
+    const handle = li.querySelector('.drag-handle');
+    handle.addEventListener('mousedown',()=>{dragAllowed=true});
+    li.addEventListener('dragstart',e=>{
+      if(!dragAllowed){e.preventDefault();return;}
+      dragAllowed=false;
+      dragSrc=s.id;li.classList.add('dragging');e.dataTransfer.effectAllowed='move';
+    });
+    li.addEventListener('dragend',()=>{dragAllowed=false;li.classList.remove('dragging');document.querySelectorAll('.outline-item').forEach(x=>x.classList.remove('drag-over'))});
+    li.addEventListener('dragover',e=>{e.preventDefault();li.classList.add('drag-over')});
+    li.addEventListener('dragleave',()=>li.classList.remove('drag-over'));
+    li.addEventListener('drop',e=>{
+      e.preventDefault();li.classList.remove('drag-over');
+      if(dragSrc===s.id) return;
+      const fromIdx=sections.findIndex(x=>x.id===dragSrc);
+      const toIdx=sections.findIndex(x=>x.id===s.id);
+      const [moved]=sections.splice(fromIdx,1);
+      sections.splice(toIdx,0,moved);
+      renderOutline();
+    });
+    list.appendChild(li);
+    paintRange(li.querySelector('input[type="range"]'));
+  });
+  const allocEl = document.getElementById('allocated-total');
+  allocEl.textContent = `${allocated.toLocaleString()} / ${total.toLocaleString()} 字`;
+  allocEl.style.color = Math.abs(allocated-total)>total*0.05 ? 'var(--an-warning)' : 'var(--an-success)';
+}
+
+function updateSectionWords(id, val) {
+  const s = sections.find(x=>x.id===id);
+  if(s) { s.words=parseInt(val); renderOutline(); }
+}
+
+function removeSection(id) {
+  sections = sections.filter(x=>x.id!==id);
+  renderOutline();
+}
+
+function addSection() {
+  const nameEl = document.getElementById('new-section-name');
+  const typeEl = document.getElementById('new-section-type');
+  const name = nameEl.value.trim();
+  if(!name) return;
+  sections.push({id:'s'+Date.now(),name,type:typeEl.value,words:500,locked:false});
+  nameEl.value='';
+  renderOutline();
+}
+
+// ── Check List ──
+function buildCheckList() {
+  const checks = [
+    {label:'论文题目',val:()=>document.getElementById('title').value.trim(),required:false},
+    {label:'核心论点',val:()=>document.getElementById('coreArg').value.trim(),required:true},
+    {label:'学科领域',val:()=>document.getElementById('discipline').value.trim(),required:false},
+    {label:'论文类型',val:()=>{const v=document.getElementById('paperType').value;return v==='__custom__'?document.getElementById('paperTypeCustom').value.trim():v},required:false},
+    {label:'大纲章节',val:()=>sections.length>0?'已配置':'',required:false},
+  ];
+  const el = document.getElementById('check-list');
+  el.innerHTML = checks.map((c,i)=>{
+    const v = c.val();
+    const ok = !!v;
+    const color = ok ? 'var(--an-success)' : (c.required?'var(--an-error)':'var(--an-warning)');
+    const icon = ok ? 'ti-circle-check' : (c.required?'ti-circle-x':'ti-circle-dashed');
+    return `<div class="check-item" style="animation:fadeUp 0.3s ease ${i*60}ms both;">
+      <i class="ti ${icon} check-icon" style="color:${color}" aria-hidden="true"></i>
+      <span class="check-label">${c.label}</span>
+      <span class="check-val">${v||'<span style="color:var(--an-muted-soft);">'+(c.required?'必填':'未填')+'</span>'}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── Generate Prompt ──
+function generatePrompt() {
+  const v = document.getElementById('version').value;
+  const title = document.getElementById('title').value.trim()||'【待填写】';
+  const paperTypeEl = document.getElementById('paperType');
+  const paperType = paperTypeEl.value === '__custom__'
+    ? document.getElementById('paperTypeCustom').value.trim() || '【待填写】'
+    : paperTypeEl.value;
+  const discipline = document.getElementById('discipline').value.trim()||'【待填写】';
+  const researchDir = document.getElementById('researchDir').value.trim()||'【待填写】';
+  const audienceEl = document.getElementById('audience');
+  const audience = audienceEl.value === '__custom__'
+    ? document.getElementById('audienceCustom').value.trim() || '【待填写】'
+    : audienceEl.value;
+  const venue = document.getElementById('venue').value.trim()||'【待填写】';
+  const citationFmt = document.getElementById('citationFmt').value;
+  const coreArg = document.getElementById('coreArg').value.trim()||'【待填写核心论点】';
+  const researchQ = document.getElementById('researchQ').value.trim();
+  const writingStyle = document.getElementById('writingStyle').value;
+  const constraint = document.getElementById('constraint').value.trim();
+  const totalWords = document.getElementById('totalWords').value;
+
+  const outlineText = sections.map((s,i)=>`  ${i+1}. ${s.name}（${s.words.toLocaleString()}字）`).join('\n');
+
+  const systemPrompt = v==='A'
+    ? `你是一位资深中文学术写作专家，具备跨学科写作能力，熟悉中国高校及学术期刊的论文规范。\n你的写作准则：\n- 严格以用户提供的文献为引用依据，不得引用用户未提供的文献\n- 忠实呈现文献原意，不得歪曲或过度推断文献内容\n- 语言严谨、逻辑清晰、结构完整，符合中文学术写作惯例\n- 遇到文献不足以支撑某论点时，主动告知用户，而非捏造内容`
+    : `你是一位资深中文学术写作专家，具备跨学科写作能力，熟悉中国高校及学术期刊的论文规范。\n你的写作准则：\n- 基于你的训练知识进行写作，语言严谨、逻辑清晰、结构完整\n- 参考文献只能列出你有高度把握真实存在的文献；凡存在不确定性，须在文献列表末尾附注免责声明\n- 不得捏造实验数据、调查结果或统计数字；用概括性表述替代不确定的具体数据\n- 遇到超出你知识边界的内容，主动说明，而非臆断填充`;
+
+  const preWriting = `在开始写作之前，请先完成写前分析（200-400字），内容包括：
+1. 论题解构：核心研究问题是什么？研究范围边界在哪里？
+2. ${v==='A'?'文献梳理：提供的文献能支撑哪些论点？哪些论点文献支撑不足？':'知识评估：你对该论题的把握程度如何？哪些内容有高度确定性？'}
+3. 逻辑框架：提出2-3个分论点，说明各节之间的递进逻辑
+4. 字数规划：确认各章节字数分配是否合理
+5. 默认假设：如信息有模糊之处，列出补充假设后直接继续写作，不要停下来询问`;
+
+  const versionNote = v==='A'
+    ? `\n\n【文献规则（版本A）】\n- 只能引用用户在"参考文献"区提供的文献\n- 若文献不足以支撑某论点，在写前分析中告知，正文用"已有研究表明"等概括性表述替代\n- 禁止虚构任何文献信息`
+    : `\n\n【文献规则（版本B）】\n- 文献真实性分级：高确定性→正常引用；中确定性→标注[建议用户核实]；低确定性→禁止列入\n- 参考文献列表末尾必须附加免责声明：「本参考文献列表由AI根据训练知识生成，请在提交前通过中国知网、万方数据等数据库逐一核实」\n- 禁止捏造实验数据和统计数字`;
+
+  const styleRules = `\n\n【语言风格规范】\n✅ 必须遵守：\n- 每段聚焦一个核心意思，首句为主题句\n- 逻辑连接词须体现真实逻辑关系（因果/转折/递进/并列）\n- 全文统一使用"本文""本研究"，不得与"我"混用\n- 专业术语首次出现须给出全称或定义\n- 数字超过两位用阿拉伯数字；百分比一律用阿拉伯数字\n\n❌ 严格禁止：\n- 空洞套语："综上所述""由此可见""不言而喻""众所周知"\n- 无效过渡："接下来本文将……""在上文分析的基础上……"\n- AI腔表达："值得注意的是""不可忽视的是""令人深思的是"\n- 捏造内容：虚构数据、实验结果、文献信息\n- 主观煽情："具有极其重要的意义""对人类文明产生不可估量的影响"`;
+
+  const outputFmt = `\n\n【输出格式】\n请严格按以下顺序输出：\n════════════════════\n【写前分析】\n（约200-400字）\n════════════════════\n【正式论文】\n\n[标题]\n\n摘要\n（200-300字）\n关键词：词1；词2；词3\n\n${sections.filter(s=>s.type!=='abstract').map((s,i)=>`${i+1} ${s.name}\n[正文，约${s.words}字]`).join('\n\n')}\n\n参考文献\n[按${citationFmt}格式]${v==='B'?'\n【文献说明】[附免责声明]':''}\n════════════════════`;
+
+  const prompt = `## 系统角色
+
+${systemPrompt}
+
+---
+
+## 任务指令
+
+请根据以下论文信息，完成一篇完整的中文学术论文。
+
+${preWriting}
+
+---
+
+## 论文基本信息
+
+| 字段 | 内容 |
+|------|------|
+| 题目 | ${title} |
+| 论文类型 | ${paperType} |
+| 学科领域 | ${discipline} |
+| 研究方向 | ${researchDir} |
+| 目标字数 | ${parseInt(totalWords).toLocaleString()}字（不含参考文献）|
+| 目标读者 | ${audience} |
+| 提交场合 | ${venue} |
+| 参考文献格式 | ${citationFmt} |${constraint?`\n| 特殊限制 | ${constraint} |`:''}
+| 版本 | 版本${v}（${v==='A'?'用户自提供文献':'AI知识写作，文献需核实'}）|
+
+---
+
+## 核心论点与写作方向
+
+**核心论点：**
+${coreArg}
+${researchQ?`\n**研究问题：**\n${researchQ}`:''}${writingStyle?`\n\n**写作风格倾向：** ${writingStyle}`:''}
+
+---
+
+## 大纲与字数规划
+
+总字数：${parseInt(totalWords).toLocaleString()}字
+
+${outlineText}
+
+---
+${versionNote}
+${styleRules}
+${outputFmt}`;
+
+  document.getElementById('output-box').textContent = prompt;
+  document.getElementById('output-area').style.display='block';
+}
+
+// ── Copy ──
+function copyOutput() {
+  const text = document.getElementById('output-box').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> 已复制';
+    setTimeout(()=>btn.innerHTML=orig,1800);
+  });
+}
+
+// ── Send ──
+function sendToChat() {
+  const text = document.getElementById('output-box').textContent;
+  if(typeof sendPrompt==='function') sendPrompt(text);
+}
+
+function autosave() {}
+
+// ── Range Track Fill (WebKit) ──
+function paintRange(el) {
+  const min = parseFloat(el.min), max = parseFloat(el.max), val = parseFloat(el.value);
+  const pct = ((val - min) / (max - min)) * 100;
+  el.style.background = `linear-gradient(to right, var(--an-primary) ${pct}%, var(--an-surface-soft) ${pct}%)`;
+}
+
+// ── Init ──
+updateTotalWords();
+renderOutline();
+</script>
+</body>
+</html>
