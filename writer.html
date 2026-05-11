@@ -1,0 +1,1832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>写作管理器 — Writing Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Reset ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== BMW Design Tokens ===== */
+:root {
+  --c-canvas: #000000;
+  --c-surface-soft: #0d0d0d;
+  --c-surface-card: #1a1a1a;
+  --c-surface-elevated: #262626;
+  --c-carbon-gray: #2b2b2b;
+  --c-hairline: #3c3c3c;
+  --c-hairline-strong: #262626;
+  --c-on-dark: #ffffff;
+  --c-body: #bbbbbb;
+  --c-body-strong: #e6e6e6;
+  --c-muted: #7e7e7e;
+  --c-m-blue-light: #0066b1;
+  --c-m-blue-dark: #1c69d4;
+  --c-m-red: #e22718;
+
+  --ff: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --fs-display-xl: 80px;
+  --fs-display-lg: 56px;
+  --fs-display-md: 40px;
+  --fs-display-sm: 32px;
+  --fs-title-lg: 24px;
+  --fs-title-md: 20px;
+  --fs-body-md: 16px;
+  --fs-body-sm: 14px;
+  --fs-caption: 12px;
+  --fs-button: 14px;
+
+  --sp-xs: 8px;
+  --sp-sm: 12px;
+  --sp-md: 16px;
+  --sp-lg: 24px;
+  --sp-xl: 40px;
+  --sp-xxl: 64px;
+  --sp-section: 96px;
+
+  --r-none: 0px;
+  --r-full: 9999px;
+
+  --transition-fast: 0.15s ease;
+}
+
+/* ===== Base ===== */
+body {
+  font-family: var(--ff);
+  font-size: var(--fs-body-md);
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--c-body);
+  background: var(--c-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* ===== Navigation ===== */
+.top-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 64px;
+  background: var(--c-canvas);
+  border-bottom: 1px solid var(--c-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--sp-lg);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  text-decoration: none;
+}
+.nav-m-stripe {
+  display: flex;
+  height: 24px;
+  width: 3px;
+  border-radius: 1px;
+  overflow: hidden;
+}
+.nav-m-stripe span { flex: 1; }
+.nav-brand-text {
+  font-size: var(--fs-title-lg);
+  font-weight: 700;
+  color: var(--c-on-dark);
+  letter-spacing: -0.5px;
+}
+
+.nav-menu {
+  display: flex;
+  gap: var(--sp-lg);
+  list-style: none;
+}
+.nav-menu a {
+  font-size: var(--fs-body-sm);
+  font-weight: 400;
+  color: var(--c-body);
+  text-decoration: none;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+  transition: color var(--transition-fast);
+  position: relative;
+}
+.nav-menu a:hover { color: var(--c-on-dark); }
+.nav-menu a.active { color: var(--c-on-dark); }
+.nav-menu a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--c-on-dark);
+}
+
+.nav-right { display: flex; align-items: center; gap: var(--sp-md); }
+
+.hamburger {
+  display: none;
+  width: 48px; height: 48px;
+  background: none; border: none;
+  color: var(--c-on-dark);
+  cursor: pointer;
+  font-size: 24px;
+  align-items: center; justify-content: center;
+}
+
+/* ===== M Stripe Divider ===== */
+.m-stripe {
+  height: 4px;
+  width: 100%;
+  display: flex;
+}
+.m-stripe div { flex: 1; }
+
+/* ===== Section Layout ===== */
+.section { padding: var(--sp-section) var(--sp-lg); }
+.section-inner { max-width: 1440px; margin: 0 auto; }
+.section-title {
+  font-size: var(--fs-display-lg);
+  font-weight: 700;
+  color: var(--c-on-dark);
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  line-height: 1.05;
+  margin-bottom: var(--sp-sm);
+}
+.section-subtitle {
+  font-size: var(--fs-body-md);
+  font-weight: 300;
+  color: var(--c-muted);
+  margin-bottom: var(--sp-xl);
+}
+
+/* ===== Hero ===== */
+.hero {
+  padding: calc(64px + var(--sp-xxl)) var(--sp-lg) var(--sp-xxl);
+  background: var(--c-canvas);
+  text-align: center;
+}
+.hero h1 {
+  font-size: var(--fs-display-xl);
+  font-weight: 700;
+  color: var(--c-on-dark);
+  text-transform: uppercase;
+  line-height: 1.0;
+  letter-spacing: -1px;
+  margin-bottom: var(--sp-md);
+}
+.hero .subtitle {
+  font-size: var(--fs-display-sm);
+  font-weight: 300;
+  color: var(--c-body);
+  max-width: 640px;
+  margin: 0 auto var(--sp-xl);
+  line-height: 1.3;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-sm);
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--ff);
+  font-size: var(--fs-button);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 16px 32px;
+  height: 48px;
+  border: 1px solid var(--c-on-dark);
+  background: transparent;
+  color: var(--c-on-dark);
+  border-radius: var(--r-none);
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn:hover { background: rgba(255,255,255,0.08); }
+.btn--fill {
+  background: var(--c-on-dark);
+  color: var(--c-canvas);
+}
+.btn--fill:hover { background: #e6e6e6; }
+.btn--small {
+  font-size: var(--fs-caption);
+  padding: 10px 20px;
+  height: 36px;
+  letter-spacing: 1px;
+}
+.btn--blue {
+  border-color: var(--c-m-blue-dark);
+  color: var(--c-m-blue-dark);
+}
+.btn--blue:hover { background: rgba(28,105,212,0.1); }
+.btn--red {
+  border-color: var(--c-m-red);
+  color: var(--c-m-red);
+}
+.btn--red:hover { background: rgba(226,39,24,0.1); }
+.btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ===== Tab Navigation ===== */
+.tab-bar {
+  display: flex;
+  gap: var(--sp-xl);
+  border-bottom: 1px solid var(--c-hairline);
+  padding: 0 var(--sp-lg);
+  overflow-x: auto;
+}
+.tab-item {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--c-muted);
+  background: none;
+  border: none;
+  padding: var(--sp-md) 0;
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+.tab-item:hover { color: var(--c-body); }
+.tab-item.active {
+  color: var(--c-on-dark);
+}
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--c-on-dark);
+}
+
+/* ===== Category Tabs ===== */
+.cat-tabs {
+  display: flex;
+  gap: var(--sp-lg);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-xl);
+}
+.cat-tab {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--c-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--sp-xs) 0;
+  position: relative;
+  transition: color var(--transition-fast);
+}
+.cat-tab:hover { color: var(--c-body); }
+.cat-tab.active { color: var(--c-on-dark); }
+.cat-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--c-on-dark);
+}
+
+/* ===== Template Cards ===== */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-lg);
+}
+@media (max-width: 1024px) { .template-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 768px) { .template-grid { grid-template-columns: 1fr; } }
+
+.template-card {
+  background: var(--c-surface-card);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-none);
+  padding: var(--sp-lg);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  position: relative;
+}
+.template-card:hover {
+  border-color: var(--c-body);
+  background: var(--c-surface-elevated);
+}
+.template-card.selected {
+  border-color: var(--c-on-dark);
+  border-width: 2px;
+}
+
+.template-cat-label {
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--c-m-blue-light);
+  margin-bottom: var(--sp-xs);
+}
+.template-name {
+  font-size: var(--fs-title-lg);
+  font-weight: 700;
+  color: var(--c-on-dark);
+  margin-bottom: var(--sp-xs);
+}
+.template-desc {
+  font-size: var(--fs-body-sm);
+  font-weight: 300;
+  color: var(--c-muted);
+  line-height: 1.5;
+}
+.template-star {
+  position: absolute;
+  top: var(--sp-md);
+  right: var(--sp-md);
+  width: 28px; height: 28px;
+  background: none;
+  border: none;
+  color: var(--c-muted);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast);
+}
+.template-star:hover { color: #f4b400; }
+.template-star.starred { color: #f4b400; }
+
+/* ===== Config Panel ===== */
+.config-panel {
+  display: none;
+}
+.config-panel.visible { display: block; }
+
+.config-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: var(--sp-lg);
+  min-height: 600px;
+}
+@media (max-width: 1024px) {
+  .config-layout { grid-template-columns: 1fr; }
+}
+
+.config-sidebar {
+  border-right: 1px solid var(--c-hairline);
+  padding-right: var(--sp-lg);
+}
+.config-main {
+  padding-left: var(--sp-lg);
+}
+
+.config-group {
+  margin-bottom: var(--sp-lg);
+}
+.config-label {
+  display: block;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--c-muted);
+  margin-bottom: var(--sp-xs);
+}
+.config-input {
+  width: 100%;
+  font-family: var(--ff);
+  font-size: var(--fs-body-md);
+  font-weight: 300;
+  padding: 12px 16px;
+  background: var(--c-surface-card);
+  color: var(--c-on-dark);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-none);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+.config-input:focus { border-color: var(--c-on-dark); }
+.config-input::placeholder { color: var(--c-muted); }
+
+select.config-input {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237e7e7e' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+textarea.config-input {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+/* Range slider */
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+}
+.range-row input[type="range"] {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: var(--c-hairline);
+  border-radius: 0;
+  outline: none;
+}
+.range-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: var(--r-full);
+  background: var(--c-on-dark);
+  cursor: pointer;
+  border: none;
+}
+.range-row input[type="range"]::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border-radius: var(--r-full);
+  background: var(--c-on-dark);
+  cursor: pointer;
+  border: none;
+}
+.range-val {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+  color: var(--c-on-dark);
+  min-width: 48px;
+  text-align: right;
+}
+
+/* ===== Prompt Preview ===== */
+.preview-box {
+  background: var(--c-surface-soft);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-none);
+  padding: var(--sp-lg);
+  min-height: 400px;
+  font-family: "SF Mono", ui-monospace, "Cascadia Code", Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--c-body);
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: auto;
+  max-height: 600px;
+}
+.preview-placeholder {
+  text-align: center;
+  padding: var(--sp-xxl) 0;
+  color: var(--c-muted);
+}
+
+.preview-actions {
+  display: flex;
+  gap: var(--sp-sm);
+  margin-top: var(--sp-lg);
+  flex-wrap: wrap;
+}
+
+/* ===== Humanizer Section ===== */
+.humanizer-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: var(--sp-lg);
+  min-height: 500px;
+}
+@media (max-width: 1024px) {
+  .humanizer-layout { grid-template-columns: 1fr; }
+}
+
+.pattern-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-sm);
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: var(--sp-sm);
+}
+.pattern-grid::-webkit-scrollbar { width: 4px; }
+.pattern-grid::-webkit-scrollbar-track { background: transparent; }
+.pattern-grid::-webkit-scrollbar-thumb { background: var(--c-hairline); }
+
+.pattern-item {
+  background: var(--c-surface-card);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-none);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+}
+.pattern-item:hover {
+  border-color: var(--c-body);
+  background: var(--c-surface-elevated);
+}
+.pattern-item.selected {
+  border-color: var(--c-m-blue-light);
+  border-width: 2px;
+  padding: 11px 15px;
+}
+
+.pattern-check {
+  width: 18px; height: 18px;
+  border: 2px solid var(--c-muted);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.pattern-item.selected .pattern-check {
+  background: var(--c-m-blue-light);
+  border-color: var(--c-m-blue-light);
+}
+.pattern-check svg { width: 12px; height: 12px; color: #fff; opacity: 0; transition: opacity var(--transition-fast); }
+.pattern-item.selected .pattern-check svg { opacity: 1; }
+
+.pattern-info { flex: 1; min-width: 0; }
+.pattern-id {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--c-m-blue-light);
+  letter-spacing: 1px;
+}
+.pattern-name-text {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+  color: var(--c-on-dark);
+  line-height: 1.3;
+}
+.pattern-brief {
+  font-size: var(--fs-caption);
+  color: var(--c-muted);
+  line-height: 1.3;
+}
+
+/* ===== Config inline group ===== */
+.config-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-md);
+}
+@media (max-width: 640px) { .config-row { grid-template-columns: 1fr; } }
+
+/* ===== History Table ===== */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.history-table th {
+  text-align: left;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--c-muted);
+  padding: var(--sp-sm) var(--sp-md);
+  border-bottom: 1px solid var(--c-hairline);
+}
+.history-table td {
+  padding: var(--sp-sm) var(--sp-md);
+  border-bottom: 1px solid var(--c-hairline);
+  font-size: var(--fs-body-sm);
+  font-weight: 300;
+  color: var(--c-body);
+}
+.history-table tr:hover td { background: var(--c-surface-card); }
+.history-table .col-template { color: var(--c-on-dark); font-weight: 600; }
+.history-table .col-date { color: var(--c-muted); }
+.history-empty {
+  text-align: center;
+  padding: var(--sp-xxl) 0;
+  color: var(--c-muted);
+}
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--c-on-dark);
+  color: var(--c-canvas);
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 12px 28px;
+  border-radius: var(--r-none);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 200;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== Footer ===== */
+.footer {
+  padding: var(--sp-xxl) var(--sp-lg);
+  background: var(--c-canvas);
+  border-top: 1px solid var(--c-hairline);
+}
+.footer-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-lg);
+}
+@media (max-width: 768px) { .footer-inner { grid-template-columns: 1fr; } }
+.footer-col-title {
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--c-on-dark);
+  margin-bottom: var(--sp-md);
+}
+.footer-col a {
+  display: block;
+  font-size: var(--fs-body-sm);
+  font-weight: 300;
+  color: var(--c-muted);
+  text-decoration: none;
+  padding: 4px 0;
+  transition: color var(--transition-fast);
+}
+.footer-col a:hover { color: var(--c-on-dark); }
+.footer-bottom {
+  max-width: 1440px;
+  margin: var(--sp-xl) auto 0;
+  padding-top: var(--sp-lg);
+  border-top: 1px solid var(--c-hairline);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-md);
+}
+.footer-legal {
+  font-size: var(--fs-caption);
+  color: var(--c-muted);
+  letter-spacing: 0.5px;
+}
+.footer-legal a { color: var(--c-body); text-decoration: none; }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 48px; letter-spacing: -0.5px; }
+  .hero .subtitle { font-size: var(--fs-body-md); }
+  .section-title { font-size: var(--fs-display-sm); }
+  .nav-menu { display: none; }
+  .hamburger { display: flex; }
+  .top-nav { padding: 0 var(--sp-md); }
+  .tab-bar { padding: 0 var(--sp-md); }
+  .section { padding: var(--sp-xxl) var(--sp-md); }
+  .config-layout, .humanizer-layout { grid-template-columns: 1fr; }
+  .config-sidebar { border-right: none; border-bottom: 1px solid var(--c-hairline); padding-right: 0; padding-bottom: var(--sp-lg); }
+  .config-main { padding-left: 0; padding-top: var(--sp-lg); }
+}
+
+/* ===== Animations ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.4s ease both; }
+
+/* ===== Search ===== */
+.search-bar {
+  position: relative;
+  max-width: 400px;
+  margin-bottom: var(--sp-lg);
+}
+.search-bar input {
+  width: 100%;
+  font-family: var(--ff);
+  font-size: var(--fs-body-sm);
+  font-weight: 300;
+  padding: 10px 16px 10px 40px;
+  background: var(--c-surface-card);
+  color: var(--c-on-dark);
+  border: 1px solid var(--c-hairline);
+  border-radius: var(--r-none);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+.search-bar input:focus { border-color: var(--c-on-dark); }
+.search-bar input::placeholder { color: var(--c-muted); }
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--c-muted);
+  width: 16px; height: 16px;
+}
+</style>
+</head>
+<body>
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+  <a href="#" class="nav-brand">
+    <div class="nav-m-stripe">
+      <span style="background:var(--c-m-blue-light)"></span>
+      <span style="background:var(--c-m-blue-dark)"></span>
+      <span style="background:var(--c-m-red)"></span>
+    </div>
+    <span class="nav-brand-text">WRITER</span>
+  </a>
+  <ul class="nav-menu" id="nav-menu">
+    <li><a href="#" class="active" data-tab="templates">模板库</a></li>
+    <li><a href="#" data-tab="humanizer">去 AI 味</a></li>
+    <li><a href="#" data-tab="favorites">收藏</a></li>
+    <li><a href="#" data-tab="history">历史</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="hamburger" id="hamburger-btn" aria-label="菜单">☰</button>
+  </div>
+</nav>
+
+<!-- M Stripe -->
+<div class="m-stripe">
+  <div style="background:var(--c-m-blue-light)"></div>
+  <div style="background:var(--c-m-blue-dark)"></div>
+  <div style="background:var(--c-m-red)"></div>
+</div>
+
+<!-- ===== TAB: Templates ===== -->
+<div class="tab-content" id="tab-templates">
+  <!-- Hero -->
+  <section class="hero">
+    <h1 class="fade-up">WRITING<br>MANAGER</h1>
+    <p class="subtitle fade-up" style="animation-delay:0.05s">
+      15+ 场景模板，即选即用。<br>
+      配置参数，实时预览，一键生成可直接使用的提示词。
+    </p>
+    <div class="hero-cta fade-up" style="animation-delay:0.1s">
+      <button class="btn btn--fill" onclick="document.getElementById('templates-section').scrollIntoView({behavior:'smooth'})">BROWSE TEMPLATES</button>
+    </div>
+  </section>
+
+  <div class="m-stripe">
+    <div style="background:var(--c-m-blue-light)"></div>
+    <div style="background:var(--c-m-blue-dark)"></div>
+    <div style="background:var(--c-m-red)"></div>
+  </div>
+
+  <!-- Templates Section -->
+  <section class="section" id="templates-section">
+    <div class="section-inner">
+      <div class="section-title">TEMPLATE LIBRARY</div>
+      <div class="section-subtitle">选择场景模板，配置参数，实时预览生成的提示词</div>
+
+      <!-- Search -->
+      <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="template-search" placeholder="搜索模板..." oninput="filterTemplates()">
+      </div>
+
+      <!-- Category Tabs -->
+      <div class="cat-tabs" id="cat-tabs"></div>
+
+      <!-- Template Grid -->
+      <div class="template-grid" id="template-grid"></div>
+    </div>
+  </section>
+
+  <!-- Config + Preview Panel -->
+  <section class="section config-panel" id="config-panel">
+    <div class="section-inner">
+      <div class="m-stripe" style="margin-bottom:var(--sp-xl)">
+        <div style="background:var(--c-m-blue-light)"></div>
+        <div style="background:var(--c-m-blue-dark)"></div>
+        <div style="background:var(--c-m-red)"></div>
+      </div>
+
+      <div class="section-title">CONFIGURE & PREVIEW</div>
+      <div class="section-subtitle" id="config-template-name"></div>
+
+      <div class="config-layout">
+        <!-- Left: Config -->
+        <div class="config-sidebar" id="config-sidebar"></div>
+
+        <!-- Right: Preview -->
+        <div class="config-main">
+          <div class="config-label" style="margin-bottom:var(--sp-sm)">PROMPT PREVIEW</div>
+          <div class="preview-box" id="preview-box">
+            <div class="preview-placeholder">调整左侧参数，提示词将实时更新</div>
+          </div>
+          <div class="preview-actions">
+            <button class="btn btn--small" id="btn-copy" onclick="copyPrompt()" style="display:none">
+              复制提示词
+            </button>
+            <button class="btn btn--small btn--blue" id="btn-send" onclick="sendToChat()" style="display:none">
+              发送给 AI
+            </button>
+            <button class="btn btn--small btn--red" onclick="saveFavorite()">
+              收藏
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== TAB: Humanizer ===== -->
+<div class="tab-content" id="tab-humanizer" style="display:none">
+  <section class="hero" style="padding-top:calc(64px + var(--sp-xxl))">
+    <h1 class="fade-up" style="font-size:var(--fs-display-lg)">去除 AI 痕迹</h1>
+    <p class="subtitle fade-up" style="animation-delay:0.05s">
+      基于维基百科 AI 写作特征指南<br>
+      精准识别并修复 24 种 AI 写作痕迹
+    </p>
+  </section>
+
+  <div class="m-stripe">
+    <div style="background:var(--c-m-blue-light)"></div>
+    <div style="background:var(--c-m-blue-dark)"></div>
+    <div style="background:var(--c-m-red)"></div>
+  </div>
+
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-title" style="font-size:var(--fs-display-sm)">SELECT AI PATTERNS</div>
+      <div class="section-subtitle">已选 <span id="hz-count">24</span> 个模式</div>
+
+      <div style="display:flex;gap:var(--sp-sm);margin-bottom:var(--sp-lg);flex-wrap:wrap">
+        <button class="btn btn--small btn--fill" onclick="hzSelectAll()">全选</button>
+        <button class="btn btn--small" onclick="hzDeselectAll()">全部取消</button>
+      </div>
+
+      <div class="humanizer-layout">
+        <div class="pattern-grid" id="hz-patterns"></div>
+
+        <div>
+          <div class="config-label" style="margin-bottom:var(--sp-sm)">CONFIGURATION</div>
+          <div style="background:var(--c-surface-card);border:1px solid var(--c-hairline);border-radius:var(--r-none);padding:var(--sp-lg)">
+            <div class="config-row">
+              <div class="config-group">
+                <label class="config-label">优化强度</label>
+                <div class="range-row">
+                  <input type="range" id="hz-intensity" min="1" max="10" value="7" oninput="document.getElementById('hz-int-val').textContent=this.value">
+                  <span class="range-val" id="hz-int-val">7</span>
+                </div>
+              </div>
+              <div class="config-group">
+                <label class="config-label">目标语调</label>
+                <select class="config-input" id="hz-tone">
+                  <option value="neutral">中性客观</option>
+                  <option value="casual">轻松随意</option>
+                  <option value="professional">专业严谨</option>
+                  <option value="academic">学术正式</option>
+                  <option value="creative">创意表达</option>
+                </select>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="config-group">
+                <label class="config-label">目标语言</label>
+                <select class="config-input" id="hz-lang">
+                  <option value="zh-CN">简体中文</option>
+                  <option value="en">English</option>
+                  <option value="zh-TW">繁體中文</option>
+                </select>
+              </div>
+              <div class="config-group">
+                <label class="config-label">文本类型</label>
+                <select class="config-input" id="hz-type">
+                  <option value="general">通用文本</option>
+                  <option value="academic">学术论文</option>
+                  <option value="blog">博客文章</option>
+                  <option value="social">社交媒体</option>
+                  <option value="business">商务文档</option>
+                  <option value="creative">创意写作</option>
+                </select>
+              </div>
+            </div>
+            <div class="config-group">
+              <label class="config-label">附加要求（可选）</label>
+              <input class="config-input" type="text" id="hz-extra" placeholder="例如：保留所有专业术语、保持第一人称视角...">
+            </div>
+          </div>
+
+          <div class="preview-actions" style="margin-top:var(--sp-lg)">
+            <button class="btn btn--small btn--fill" onclick="hzGenerate()">生成提示词</button>
+            <button class="btn btn--small" id="hz-copy-btn" onclick="hzCopy()" style="display:none">复制</button>
+          </div>
+
+          <div class="preview-box" id="hz-output" style="margin-top:var(--sp-lg);min-height:200px">
+            <div class="preview-placeholder">配置参数后点击"生成提示词"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== TAB: Favorites ===== -->
+<div class="tab-content" id="tab-favorites" style="display:none">
+  <section class="section" style="padding-top:calc(64px + var(--sp-section))">
+    <div class="section-inner">
+      <div class="section-title">FAVORITES</div>
+      <div class="section-subtitle">收藏的提示词模板</div>
+      <div id="favorites-content">
+        <div class="history-empty">暂无收藏</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== TAB: History ===== -->
+<div class="tab-content" id="tab-history" style="display:none">
+  <section class="section" style="padding-top:calc(64px + var(--sp-section))">
+    <div class="section-inner">
+      <div class="section-title">HISTORY</div>
+      <div class="section-subtitle">最近生成的提示词（自动保存）</div>
+      <div id="history-content">
+        <div class="history-empty">暂无历史记录</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-col">
+      <div class="footer-col-title">Templates</div>
+      <a href="#" onclick="switchTab('templates')">学术写作</a>
+      <a href="#" onclick="switchTab('templates')">内容创作</a>
+      <a href="#" onclick="switchTab('templates')">职场文档</a>
+      <a href="#" onclick="switchTab('templates')">技术写作</a>
+      <a href="#" onclick="switchTab('templates')">翻译润色</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Tools</div>
+      <a href="#" onclick="switchTab('humanizer')">去 AI 味</a>
+      <a href="#" onclick="switchTab('favorites')">收藏</a>
+      <a href="#" onclick="switchTab('history')">历史</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">Projects</div>
+      <a href="prompt_manager.html">论文提示词</a>
+      <a href="humanizer.html">Humanizer (独立版)</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title">About</div>
+      <a href="https://github.com/tanzhijir-04" target="_blank">GitHub</a>
+      <a href="PRD.md" target="_blank">PRD</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-legal">Built by <a href="https://github.com/tanzhijir-04" target="_blank">tanzhijir-04</a></span>
+    <span class="footer-legal">Based on Wikipedia:Signs of AI writing</span>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// TEMPLATES DATA
+// ============================================================
+const templates = [
+  // 学术写作
+  { id:'review', name:'文献综述', cat:'academic', desc:'结构化文献综述，涵盖研究现状、方法对比和未来方向' },
+  { id:'research', name:'研究论文', cat:'academic', desc:'标准学术论文结构：摘要、引言、方法、结果、讨论' },
+  { id:'course', name:'课程论文', cat:'academic', desc:'适合本科/研究生课程作业的论文框架' },
+  { id:'proposal', name:'开题报告', cat:'academic', desc:'研究背景、目标、方法论、预期成果的完整开题' },
+  { id:'abstract', name:'学术摘要', cat:'academic', desc:'中英文摘要生成，控制在 200-300 字' },
+  { id:'review-workflow', name:'综述工作流', cat:'academic', desc:'多步综述写作：大纲→逐章展开→引用→定稿' },
+
+  // 内容创作
+  { id:'wechat', name:'公众号长文', cat:'content', desc:'适合微信公众号的长文，有标题、小标题、标签' },
+  { id:'xiaohongshu', name:'小红书笔记', cat:'content', desc:'种草/测评/攻略类笔记，带 emoji 和话题标签' },
+  { id:'zhihu', name:'知乎回答', cat:'content', desc:'专业深度回答，有理有据，适合知乎调性' },
+  { id:'video-script', name:'短视频脚本', cat:'content', desc:'60-180 秒视频脚本，含画面、台词、BGM 建议' },
+  { id:'podcast', name:'播客文稿', cat:'content', desc:'对话式播客脚本，含开场、话题展开、收尾' },
+
+  // 职场文档
+  { id:'weekly', name:'周报/月报', cat:'business', desc:'结果导向的周报，老板 30 秒看完' },
+  { id:'prd', name:'产品需求文档', cat:'business', desc:'完整的 PRD 框架：背景、需求、方案、排期' },
+  { id:'competitive', name:'竞品分析', cat:'business', desc:'功能对比、差异化分析、策略建议' },
+  { id:'meeting', name:'会议纪要', cat:'business', desc:'议题、决议、待办事项的结构化纪要' },
+  { id:'email', name:'商务邮件', cat:'business', desc:'正式商务邮件，含主题行、正文、行动号召' },
+
+  // 技术写作
+  { id:'tech-blog', name:'技术博客', cat:'tech', desc:'开发者视角的技术文章，含代码示例' },
+  { id:'api-doc', name:'API 文档', cat:'tech', desc:'RESTful API 文档模板，含端点、参数、示例' },
+  { id:'readme', name:'README', cat:'tech', desc:'项目 README，含介绍、安装、使用、贡献指南' },
+  { id:'postmortem', name:'故障复盘', cat:'tech', desc:'事故时间线、根因分析、修复措施、预防方案' },
+
+  // 翻译润色
+  { id:'cn2en', name:'中译英润色', cat:'translate', desc:'中文学术文本翻译为自然英文，保持学术风格' },
+  { id:'en2cn', name:'英译中自然化', cat:'content', desc:'英文学术文本翻译为自然中文，避免翻译腔' },
+  { id:'humanize', name:'去 AI 味', cat:'translate', desc:'检测并去除 AI 生成痕迹，注入人性化表达' },
+];
+
+const categories = [
+  { id:'all', name:'ALL' },
+  { id:'academic', name:'ACADEMIC' },
+  { id:'content', name:'CONTENT' },
+  { id:'business', name:'BUSINESS' },
+  { id:'tech', name:'TECH' },
+  { id:'translate', name:'TRANSLATE' },
+];
+
+let currentCat = 'all';
+let selectedTemplate = null;
+let favorites = JSON.parse(localStorage.getItem('wm-favorites') || '[]');
+let history = JSON.parse(localStorage.getItem('wm-history') || '[]');
+let generatedText = '';
+
+// ============================================================
+// TEMPLATE CONFIGURATIONS
+// ============================================================
+const tplConfigs = {
+  review: {
+    fields: [
+      { key:'title', label:'论文题目', type:'text', placeholder:'请输入论文题目' },
+      { key:'discipline', label:'学科方向', type:'select', options:['计算机科学','教育学','经济学','医学','工程学','文学','法学','管理学','其他'] },
+      { key:'direction', label:'研究方向', type:'text', placeholder:'如：深度学习、自然语言处理' },
+      { key:'audience', label:'目标读者', type:'select', options:['同行评审专家','研究生','本科生','跨学科读者','__custom__'] },
+      { key:'wordCount', label:'目标字数', type:'range', min:2000, max:15000, value:8000, step:500 },
+      { key:'style', label:'写作风格', type:'select', options:['学术严谨','客观中立','批判分析','综合评述'] },
+      { key:'citation', label:'引用格式', type:'select', options:['APA','MLA','Chicago','GB/T 7714','IEEE'] },
+      { key:'constraints', label:'附加要求', type:'textarea', placeholder:'如：重点关注近 3 年文献、需要对比国内外研究差异' },
+    ],
+    buildPrompt(cfg) {
+      const audience = cfg.audience === '__custom__' ? (cfg.audienceCustom || '专业读者') : cfg.audience;
+      return `# 文献综述提示词
+
+## 系统角色
+你是一位资深的学术文献综述写作专家，擅长系统性地梳理和分析特定领域的研究进展。
+
+## 任务指令
+请根据以下信息撰写一篇结构化的文献综述。
+
+## 论文信息
+| 项目 | 内容 |
+|------|------|
+| 论文题目 | ${cfg.title || '（待填写）'} |
+| 学科方向 | ${cfg.discipline || '（待填写）'} |
+| 研究方向 | ${cfg.direction || '（待填写）'} |
+| 目标读者 | ${audience || '专业读者'} |
+| 目标字数 | ${cfg.wordCount || 8000} 字 |
+| 写作风格 | ${cfg.style || '学术严谨'} |
+| 引用格式 | ${cfg.citation || 'GB/T 7714'} |
+
+## 结构要求
+1. **引言**（约 10%）：研究背景与综述目的
+2. **文献检索方法**（约 5%）：检索策略与筛选标准
+3. **研究现状**（约 50%）：按主题/时间/方法分类梳理
+4. **研究评述**（约 20%）：现有研究的贡献与不足
+5. **未来展望**（约 10%）：研究空白与方向
+6. **结论**（约 5%）：总结要点
+
+## 语言规范
+- 使用 ${cfg.style || '学术严谨'} 的学术语言
+- 避免口语化表达和主观臆断
+- 每个论点需有文献支撑
+- 引用格式统一使用 ${cfg.citation || 'GB/T 7714'}
+- 段落之间逻辑衔接自然
+${cfg.constraints ? `\n## 附加要求\n${cfg.constraints}` : ''}`;
+    }
+  },
+
+  research: {
+    fields: [
+      { key:'title', label:'论文题目', type:'text', placeholder:'请输入论文题目' },
+      { key:'type', label:'论文类型', type:'select', options:['实验研究','理论分析','综述','案例研究','调查研究'] },
+      { key:'discipline', label:'学科方向', type:'select', options:['计算机科学','教育学','经济学','医学','工程学','文学','法学','管理学','其他'] },
+      { key:'audience', label:'目标读者', type:'select', options:['同行评审专家','研究生','本科生','跨学科读者','__custom__'] },
+      { key:'wordCount', label:'目标字数', type:'range', min:3000, max:20000, value:10000, step:500 },
+      { key:'style', label:'写作风格', type:'select', options:['学术严谨','客观中立','批判分析'] },
+      { key:'citation', label:'引用格式', type:'select', options:['APA','MLA','Chicago','GB/T 7714','IEEE'] },
+      { key:'constraints', label:'附加要求', type:'textarea', placeholder:'如：需要包含实验数据、需要对比分析' },
+    ],
+    buildPrompt(cfg) {
+      return `# 研究论文提示词
+
+## 系统角色
+你是一位经验丰富的学术论文写作专家，擅长撰写高质量的${cfg.discipline || '学术'}领域研究论文。
+
+## 任务指令
+请根据以下信息撰写一篇结构完整的研究论文。
+
+## 论文信息
+| 项目 | 内容 |
+|------|------|
+| 论文题目 | ${cfg.title || '（待填写）'} |
+| 论文类型 | ${cfg.type || '实验研究'} |
+| 学科方向 | ${cfg.discipline || '（待填写）'} |
+| 目标读者 | ${cfg.audience || '同行评审专家'} |
+| 目标字数 | ${cfg.wordCount || 10000} 字 |
+| 写作风格 | ${cfg.style || '学术严谨'} |
+| 引用格式 | ${cfg.citation || 'GB/T 7714'} |
+
+## 结构要求
+1. **摘要**（200-300 字）：目的、方法、结果、结论
+2. **关键词**（3-5 个）
+3. **引言**：背景、问题、目的、意义
+4. **文献综述**：相关研究梳理
+5. **研究方法**：研究设计、数据来源、分析方法
+6. **结果与分析**：数据呈现与讨论
+7. **结论**：主要发现、贡献、局限、展望
+8. **参考文献**
+
+## 语言规范
+- 使用 ${cfg.style || '学术严谨'} 的学术语言
+- 第三人称叙述
+- 引用格式统一使用 ${cfg.citation || 'GB/T 7714'}
+${cfg.constraints ? `\n## 附加要求\n${cfg.constraints}` : ''}`;
+    }
+  },
+
+  wechat: {
+    fields: [
+      { key:'topic', label:'文章主题', type:'text', placeholder:'如：AI 如何改变内容创作' },
+      { key:'tone', label:'语气风格', type:'select', options:['专业','轻松','感性','犀利','幽默'] },
+      { key:'wordCount', label:'目标字数', type:'range', min:800, max:5000, value:2000, step:100 },
+      { key:'audience', label:'目标读者', type:'select', options:['泛科技人群','职场人士','学生','创业者','__custom__'] },
+      { key:'platform', label:'目标平台', type:'select', options:['公众号','知乎','头条','通用'] },
+      { key:'aiControl', label:'AI 味控制', type:'range', min:0, max:100, value:30, step:5, suffix:'%' },
+      { key:'constraints', label:'附加要求', type:'textarea', placeholder:'如：开头用故事引入、每段配一个小标题' },
+    ],
+    buildPrompt(cfg) {
+      return `# 公众号长文提示词
+
+## 系统角色
+你是一位资深的公众号内容创作者，擅长将专业内容转化为读者爱看的长文。你的文章特点是：开头抓人、中间有料、结尾有共鸣。
+
+## 任务指令
+请根据以下主题撰写一篇公众号文章。
+
+## 配置信息
+| 项目 | 内容 |
+|------|------|
+| 文章主题 | ${cfg.topic || '（待填写）'} |
+| 语气风格 | ${cfg.tone || '专业'} |
+| 目标字数 | ${cfg.wordCount || 2000} 字 |
+| 目标读者 | ${cfg.audience || '泛科技人群'} |
+| 目标平台 | ${cfg.platform || '公众号'} |
+| AI 味控制 | ${cfg.aiControl || 30}%（越低越自然） |
+
+## 写作规范
+- 口语化但不低俗，像在和读者聊天
+- 每 3-4 段加一个小标题，方便碎片化阅读
+- 适当使用反问句、设问句增加互动感
+- 禁止：空洞抒情、过度排比、假大空总结
+- 可以有个人观点，不要面面俱到
+- AI 味控制等级：${cfg.aiControl || 30}% — ${cfg.aiControl <= 30 ? '高度去 AI 味，使用口语化表达，避免模板化句式' : cfg.aiControl <= 60 ? '中度去 AI 味，保持专业但不死板' : '轻度修改，保留部分正式表达'}
+
+## 输出格式
+\`\`\`
+# [标题]
+
+[开头：用一个故事/问题/场景切入，100字以内]
+
+## [小标题1]
+[正文]
+
+## [小标题2]
+[正文]
+
+[结尾：总结观点 + 引发思考的问题]
+
+---
+标签：#标签1 #标签2 #标签3
+\`\`\`
+${cfg.constraints ? `\n## 附加要求\n${cfg.constraints}` : ''}`;
+    }
+  },
+
+  weekly: {
+    fields: [
+      { key:'workItems', label:'本周工作内容', type:'textarea', placeholder='请列出本周完成的主要工作...' },
+      { key:'inProgress', label:'进行中事项', type:'textarea', placeholder='正在进行的工作及进度...' },
+      { key:'nextWeek', label:'下周计划', type:'textarea', placeholder='下周的工作安排...' },
+      { key:'blockers', label:'需要支持', type:'textarea', placeholder='遇到的阻塞问题...' },
+      { key:'metrics', label:'关键数据', type:'text', placeholder='如：完成了 3 个需求，修复 12 个 bug' },
+    ],
+    buildPrompt(cfg) {
+      return `# 周报提示词
+
+## 系统角色
+你是一位高效的职业人，写周报的原则是：老板 30 秒能看完，知道你干了什么、结果如何、下周计划。
+
+## 任务指令
+请根据以下工作内容，生成一份简洁的周报。
+
+## 工作内容
+${cfg.workItems || '（待填写）'}
+
+## 进行中
+${cfg.inProgress || '无'}
+
+## 下周计划
+${cfg.nextWeek || '（待填写）'}
+
+## 需要支持
+${cfg.blockers || '无'}
+
+## 关键数据
+${cfg.metrics || '无'}
+
+## 写作规范
+- 用"完成/推进/解决"等动词开头，不要"参与/协助"
+- 每条写结果，不写过程
+- 有数据就写数据，没数据写结论
+- 禁止：流水账、自我评价、空洞感悟
+
+## 输出格式
+\`\`\`
+## 本周完成
+- [事项]：[结果/数据]
+
+## 进行中
+- [事项]：当前进度 [X]%，预计 [日期] 完成
+
+## 下周计划
+- [事项]：目标 [具体产出]
+
+## 需要支持
+- [如有]：[具体需求]
+\`\`\``;
+    }
+  },
+
+  tech_blog: {
+    fields: [
+      { key:'topic', label:'技术主题', type:'text', placeholder:'如：React Server Components 实践' },
+      { key:'audience', label:'目标读者', type:'select', options:['初级开发者','中级开发者','高级开发者','架构师'] },
+      { key:'wordCount', label:'目标字数', type:'range', min:1000, max:8000, value:3000, step:500 },
+      { key:'style', label:'风格', type:'select', options:['实战教程','原理解析','踩坑记录','方案对比'] },
+      { key:'constraints', label:'附加要求', type:'textarea', placeholder:'如：需要包含代码示例、需要有性能对比数据' },
+    ],
+    buildPrompt(cfg) {
+      return `# 技术博客提示词
+
+## 系统角色
+你是一位有 5 年经验的开发者，写技术博客像在给同事讲方案——直接、有代码、有坑有解决方案。
+
+## 任务指令
+请根据以下技术主题撰写一篇博客文章。
+
+## 配置信息
+| 项目 | 内容 |
+|------|------|
+| 技术主题 | ${cfg.topic || '（待填写）'} |
+| 目标读者 | ${cfg.audience || '中级开发者'} |
+| 目标字数 | ${cfg.wordCount || 3000} 字 |
+| 文章风格 | ${cfg.style || '实战教程'} |
+
+## 写作规范
+- 先说"是什么"和"为什么需要"，再说"怎么做"
+- 必须包含可运行的代码示例
+- 写出你踩过的坑和解决方案
+- 禁止：教科书式定义、"让我们来看看"、"首先介绍一下背景"
+- 直接进入主题，不要空洞的开场白
+${cfg.constraints ? `\n## 附加要求\n${cfg.constraints}` : ''}`;
+    }
+  },
+
+  prd: {
+    fields: [
+      { key:'product', label:'产品名称', type:'text', placeholder:'请输入产品名称' },
+      { key:'feature', label:'功能名称', type:'text', placeholder:'请输入功能名称' },
+      { key:'background', label:'需求背景', type:'textarea', placeholder:'为什么要做这个功能...' },
+      { key:'target', label:'目标用户', type:'text', placeholder:'如：25-35岁职场人士' },
+      { key:'metrics', label:'成功指标', type:'text', placeholder:'如：DAU 提升 20%' },
+      { key:'constraints', label:'约束条件', type:'textarea', placeholder:'如：需要兼容 iOS 14+、需要支持国际化' },
+    ],
+    buildPrompt(cfg) {
+      return `# 产品需求文档提示词
+
+## 系统角色
+你是一位资深产品经理，擅长撰写清晰、完整、可执行的产品需求文档。
+
+## 任务指令
+请根据以下信息撰写一份产品需求文档（PRD）。
+
+## 产品信息
+| 项目 | 内容 |
+|------|------|
+| 产品名称 | ${cfg.product || '（待填写）'} |
+| 功能名称 | ${cfg.feature || '（待填写）'} |
+| 目标用户 | ${cfg.target || '（待填写）'} |
+| 成功指标 | ${cfg.metrics || '（待填写）'} |
+
+## 需求背景
+${cfg.background || '（待填写）'}
+
+## 文档结构
+1. **需求概述**：一句话描述需求
+2. **用户故事**：As a [用户], I want [功能], so that [价值]
+3. **功能范围**：本期包含 / 不包含
+4. **详细需求**：功能描述、交互流程、异常处理
+5. **数据需求**：埋点、指标、数据看板
+6. **排期与里程碑**
+7. **风险与依赖**
+${cfg.constraints ? `\n## 约束条件\n${cfg.constraints}` : ''}`;
+    }
+  },
+
+  cn2en: {
+    fields: [
+      { key:'text', label:'待翻译文本', type:'textarea', placeholder:'请粘贴需要翻译的中文文本...' },
+      { key:'style', label:'翻译风格', type:'select', options:['学术正式','自然流畅','简洁直接'] },
+      { key:'target', label:'目标期刊', type:'text', placeholder:'如：Nature, IEEE TNNLS' },
+      { key:'constraints', label:'特殊要求', type:'textarea', placeholder:'如：保留所有专业术语、使用美式英语' },
+    ],
+    buildPrompt(cfg) {
+      return `# 中译英学术润色提示词
+
+## 系统角色
+你是一位专业的学术翻译专家，擅长将中文学术文本翻译为自然、地道的英文学术英语。
+
+## 任务指令
+请将以下中文文本翻译为英文，保持学术风格和专业术语准确。
+
+## 翻译配置
+| 项目 | 内容 |
+|------|------|
+| 翻译风格 | ${cfg.style || '学术正式'} |
+| 目标期刊 | ${cfg.target || '（通用学术）'} |
+
+## 待翻译文本
+${cfg.text || '（待粘贴）'}
+
+## 翻译规范
+- 使用 ${cfg.style || '学术正式'} 的学术英语
+- 保持句子结构的多样性
+- 避免中式英语（Chinglish）
+- 专业术语准确，必要时保留原词
+- 逻辑连接词使用得当
+${cfg.constraints ? `\n## 特殊要求\n${cfg.constraints}` : ''}`;
+    }
+  },
+};
+
+// Add default config for templates without specific configs
+const defaultConfig = {
+  fields: [
+    { key:'topic', label:'主题', type:'text', placeholder:'请输入主题' },
+    { key:'constraints', label:'附加要求', type:'textarea', placeholder:'其他特殊要求...' },
+  ],
+  buildPrompt(cfg) {
+    return `# ${selectedTemplate?.name || '写作'}提示词
+
+## 系统角色
+你是一位专业的写作助手，擅长生成高质量的文本内容。
+
+## 任务指令
+请根据以下信息完成写作任务。
+
+## 配置信息
+| 项目 | 内容 |
+|------|------|
+| 主题 | ${cfg.topic || '（待填写）'} |
+
+${cfg.constraints ? `## 附加要求\n${cfg.constraints}` : ''}`;
+  }
+};
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.getElementById('tab-' + tabId).style.display = 'block';
+  document.querySelectorAll('.nav-menu a').forEach(a => {
+    a.classList.toggle('active', a.dataset.tab === tabId);
+  });
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('.nav-menu a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    switchTab(a.dataset.tab);
+  });
+});
+
+// ============================================================
+// TEMPLATES
+// ============================================================
+function renderCatTabs() {
+  const bar = document.getElementById('cat-tabs');
+  bar.innerHTML = categories.map(c =>
+    `<button class="cat-tab ${c.id === currentCat ? 'active' : ''}" onclick="filterCat('${c.id}')">${c.name}</button>`
+  ).join('');
+}
+
+function filterCat(cat) {
+  currentCat = cat;
+  renderCatTabs();
+  renderTemplates();
+}
+
+function filterTemplates() {
+  renderTemplates();
+}
+
+function renderTemplates() {
+  const grid = document.getElementById('template-grid');
+  const search = document.getElementById('template-search').value.toLowerCase();
+  const filtered = templates.filter(t => {
+    const catMatch = currentCat === 'all' || t.cat === currentCat;
+    const searchMatch = !search || t.name.toLowerCase().includes(search) || t.desc.toLowerCase().includes(search);
+    return catMatch && searchMatch;
+  });
+
+  grid.innerHTML = filtered.map(t => {
+    const isStarred = favorites.includes(t.id);
+    return `
+    <div class="template-card ${selectedTemplate?.id === t.id ? 'selected' : ''}" onclick="selectTemplate('${t.id}')">
+      <button class="template-star ${isStarred ? 'starred' : ''}" onclick="event.stopPropagation();toggleFavorite('${t.id}')">★</button>
+      <div class="template-cat-label">${categories.find(c=>c.id===t.cat)?.name || t.cat}</div>
+      <div class="template-name">${t.name}</div>
+      <div class="template-desc">${t.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectTemplate(id) {
+  selectedTemplate = templates.find(t => t.id === id);
+  renderTemplates();
+  renderConfig();
+  document.getElementById('config-panel').classList.add('visible');
+  document.getElementById('config-template-name').textContent = selectedTemplate.name + ' — ' + selectedTemplate.desc;
+  setTimeout(() => {
+    document.getElementById('config-panel').scrollIntoView({ behavior: 'smooth' });
+  }, 100);
+}
+
+// ============================================================
+// CONFIG PANEL
+// ============================================================
+function renderConfig() {
+  if (!selectedTemplate) return;
+  const config = tplConfigs[selectedTemplate.id] || defaultConfig;
+  const sidebar = document.getElementById('config-sidebar');
+
+  sidebar.innerHTML = config.fields.map(f => {
+    let input = '';
+    if (f.type === 'text') {
+      input = `<input class="config-input" type="text" id="cfg-${f.key}" placeholder="${f.placeholder || ''}" oninput="updatePreview()">`;
+    } else if (f.type === 'textarea') {
+      input = `<textarea class="config-input" id="cfg-${f.key}" placeholder="${f.placeholder || ''}" oninput="updatePreview()"></textarea>`;
+    } else if (f.type === 'select') {
+      const opts = f.options.map(o =>
+        o === '__custom__' ? `<option value="__custom__">自定义...</option>` : `<option value="${o}">${o}</option>`
+      ).join('');
+      input = `<select class="config-input" id="cfg-${f.key}" onchange="handleCustomSelect(this,'${f.key}');updatePreview()">${opts}</select>
+        <input class="config-input" type="text" id="cfg-${f.key}-custom" placeholder="自定义内容" style="display:none;margin-top:8px" oninput="updatePreview()">`;
+    } else if (f.type === 'range') {
+      input = `<div class="range-row">
+        <input type="range" id="cfg-${f.key}" min="${f.min}" max="${f.max}" value="${f.value}" step="${f.step || 1}" oninput="document.getElementById('cfg-${f.key}-val').textContent=this.value+(this.closest('.config-group')?.querySelector('.range-suffix')?.textContent||'');updatePreview()">
+        <span class="range-val" id="cfg-${f.key}-val">${f.value}${f.suffix || ''}</span>
+      </div>`;
+    }
+    return `<div class="config-group"><label class="config-label">${f.label}</label>${input}</div>`;
+  }).join('');
+
+  updatePreview();
+}
+
+function handleCustomSelect(el, key) {
+  const customInput = document.getElementById(`cfg-${key}-custom`);
+  if (customInput) {
+    customInput.style.display = el.value === '__custom__' ? 'block' : 'none';
+  }
+}
+
+function collectConfig() {
+  if (!selectedTemplate) return {};
+  const config = tplConfigs[selectedTemplate.id] || defaultConfig;
+  const cfg = {};
+  config.fields.forEach(f => {
+    const el = document.getElementById(`cfg-${f.key}`);
+    if (!el) return;
+    if (f.type === 'select' && el.value === '__custom__') {
+      cfg[f.key] = el.value;
+      const customEl = document.getElementById(`cfg-${f.key}-custom`);
+      if (customEl) cfg[f.key + 'Custom'] = customEl.value;
+    } else {
+      cfg[f.key] = el.value;
+    }
+  });
+  return cfg;
+}
+
+function updatePreview() {
+  const config = tplConfigs[selectedTemplate?.id] || defaultConfig;
+  const cfg = collectConfig();
+  generatedText = config.buildPrompt(cfg);
+
+  const previewBox = document.getElementById('preview-box');
+  previewBox.textContent = generatedText;
+  document.getElementById('btn-copy').style.display = 'inline-flex';
+  document.getElementById('btn-send').style.display = 'inline-flex';
+
+  // Save to history
+  saveHistory(selectedTemplate.name, generatedText);
+}
+
+// ============================================================
+// COPY / SEND
+// ============================================================
+async function copyPrompt() {
+  if (!generatedText) return;
+  try {
+    await navigator.clipboard.writeText(generatedText);
+    showToast('已复制到剪贴板');
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = generatedText;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('已复制到剪贴板');
+  }
+}
+
+function sendToChat() {
+  if (!generatedText) return;
+  if (typeof sendPrompt === 'function') {
+    sendPrompt(generatedText);
+  } else {
+    showToast('当前环境不支持发送功能');
+  }
+}
+
+// ============================================================
+// FAVORITES
+// ============================================================
+function toggleFavorite(id) {
+  const idx = favorites.indexOf(id);
+  if (idx >= 0) {
+    favorites.splice(idx, 1);
+  } else {
+    favorites.push(id);
+  }
+  localStorage.setItem('wm-favorites', JSON.stringify(favorites));
+  renderTemplates();
+  renderFavorites();
+}
+
+function saveFavorite() {
+  if (!selectedTemplate) return;
+  if (!favorites.includes(selectedTemplate.id)) {
+    favorites.push(selectedTemplate.id);
+    localStorage.setItem('wm-favorites', JSON.stringify(favorites));
+    renderTemplates();
+    showToast('已收藏');
+  } else {
+    showToast('已在收藏中');
+  }
+}
+
+function renderFavorites() {
+  const container = document.getElementById('favorites-content');
+  if (favorites.length === 0) {
+    container.innerHTML = '<div class="history-empty">暂无收藏</div>';
+    return;
+  }
+  container.innerHTML = `<table class="history-table">
+    <thead><tr><th>模板</th><th>描述</th><th>操作</th></tr></thead>
+    <tbody>${favorites.map(id => {
+      const t = templates.find(x => x.id === id);
+      if (!t) return '';
+      return `<tr>
+        <td class="col-template">${t.name}</td>
+        <td>${t.desc}</td>
+        <td><button class="btn btn--small" onclick="selectTemplate('${t.id}');switchTab('templates')">使用</button>
+        <button class="btn btn--small btn--red" onclick="toggleFavorite('${t.id}');renderFavorites()">取消</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+function saveHistory(tplName, prompt) {
+  history.unshift({ template: tplName, prompt, time: new Date().toLocaleString('zh-CN') });
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('wm-history', JSON.stringify(history));
+}
+
+function renderHistory() {
+  const container = document.getElementById('history-content');
+  if (history.length === 0) {
+    container.innerHTML = '<div class="history-empty">暂无历史记录</div>';
+    return;
+  }
+  container.innerHTML = `<table class="history-table">
+    <thead><tr><th>模板</th><th>时间</th><th>操作</th></tr></thead>
+    <tbody>${history.map((h, i) => `<tr>
+      <td class="col-template">${h.template}</td>
+      <td class="col-date">${h.time}</td>
+      <td>
+        <button class="btn btn--small" onclick="copyHistory(${i})">复制</button>
+        <button class="btn btn--small btn--red" onclick="deleteHistory(${i})">删除</button>
+      </td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
+async function copyHistory(i) {
+  try {
+    await navigator.clipboard.writeText(history[i].prompt);
+    showToast('已复制');
+  } catch { showToast('复制失败'); }
+}
+
+function deleteHistory(i) {
+  history.splice(i, 1);
+  localStorage.setItem('wm-history', JSON.stringify(history));
+  renderHistory();
+}
+
+// ============================================================
+// HUMANIZER
+// ============================================================
+const hzPatterns = [
+  { id:1, name:'过度强调意义', cat:'content', brief:'夸大的象征意义' },
+  { id:2, name:'过度强调知名度', cat:'content', brief:'媒体报道和知名度主张' },
+  { id:3, name:'肤浅的 -ing 分析', cat:'content', brief:'用分词短语增加虚假深度' },
+  { id:4, name:'宣传广告式语言', cat:'content', brief:'夸张的宣传性用语' },
+  { id:5, name:'模糊归因', cat:'content', brief:'模糊权威而非具体来源' },
+  { id:6, name:'提纲式挑战展望', cat:'content', brief:'公式化的挑战与展望' },
+  { id:7, name:'AI 高频词汇', cat:'language', brief:'此外/至关重要/格局等' },
+  { id:8, name:'系动词回避', cat:'language', brief:'用复杂结构替代"是"' },
+  { id:9, name:'否定式排比', cat:'language', brief:'不仅……而且……' },
+  { id:10, name:'三段式法则', cat:'language', brief:'强行三项并列' },
+  { id:11, name:'刻意换词', cat:'language', brief:'过度同义词替换' },
+  { id:12, name:'虚假范围', cat:'language', brief:'从X到Y的空洞结构' },
+  { id:13, name:'破折号过度', cat:'style', brief:'比人类更频繁使用破折号' },
+  { id:14, name:'粗体过度', cat:'style', brief:'机械粗体强调' },
+  { id:15, name:'内联标题列表', cat:'style', brief:'粗体标题+冒号列表' },
+  { id:16, name:'标题大写', cat:'style', brief:'英文标题全大写' },
+  { id:17, name:'表情符号', cat:'style', brief:'标题和项目符号加emoji' },
+  { id:18, name:'弯引号', cat:'style', brief:'使用弯引号而非直引号' },
+  { id:19, name:'协作交流痕迹', cat:'comm', brief:'聊天机器人对话痕迹' },
+  { id:20, name:'知识截止免责', cat:'comm', brief:'AI训练数据截止免责声明' },
+  { id:21, name:'谄媚讨好语气', cat:'comm', brief:'过于积极讨好的语言' },
+  { id:22, name:'填充短语', cat:'filler', brief:'冗长的开场白和拐杖词' },
+  { id:23, name:'过度限定', cat:'filler', brief:'削弱表达力的过度限定' },
+  { id:24, name:'通用积极结论', cat:'filler', brief:'模糊乐观的结尾' },
+];
+
+let hzSelected = new Set(hzPatterns.map(p => p.id));
+let hzPromptText = '';
+
+function renderHzPatterns() {
+  const grid = document.getElementById('hz-patterns');
+  grid.innerHTML = hzPatterns.map(p => `
+    <div class="pattern-item ${hzSelected.has(p.id) ? 'selected' : ''}" onclick="toggleHzPattern(${p.id})">
+      <div class="pattern-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="pattern-info">
+        <div class="pattern-id">#${p.id}</div>
+        <div class="pattern-name-text">${p.name}</div>
+        <div class="pattern-brief">${p.brief}</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('hz-count').textContent = hzSelected.size;
+}
+
+function toggleHzPattern(id) {
+  hzSelected.has(id) ? hzSelected.delete(id) : hzSelected.add(id);
+  renderHzPatterns();
+}
+
+function hzSelectAll() {
+  hzPatterns.forEach(p => hzSelected.add(p.id));
+  renderHzPatterns();
+}
+
+function hzDeselectAll() {
+  hzSelected.clear();
+  renderHzPatterns();
+}
+
+function hzGenerate() {
+  if (hzSelected.size === 0) { showToast('请至少选择一个模式'); return; }
+
+  const intensity = parseInt(document.getElementById('hz-intensity').value);
+  const tone = document.getElementById('hz-tone').value;
+  const lang = document.getElementById('hz-lang').value;
+  const type = document.getElementById('hz-type').value;
+  const extra = document.getElementById('hz-extra').value.trim();
+
+  const toneMap = { neutral:'中性客观', casual:'轻松随意', professional:'专业严谨', academic:'学术正式', creative:'创意表达' };
+  const typeMap = { general:'通用文本', academic:'学术论文', blog:'博客文章', social:'社交媒体', business:'商务文档', creative:'创意写作' };
+  const langMap = { 'zh-CN':'简体中文', en:'English', 'zh-TW':'繁體中文' };
+
+  const selected = hzPatterns.filter(p => hzSelected.has(p.id));
+  const patternList = selected.map(p => `- #${p.id} ${p.name}：${p.brief}`).join('\n');
+
+  hzPromptText = `# 去 AI 味 — 人性化处理系统提示词
+
+## 角色设定
+你是一位专业的文字编辑，专门识别和去除 AI 生成文本的痕迹，使文字听起来更自然、更有人味。
+
+## 任务
+1. 识别 AI 模式
+2. 重写问题片段
+3. 保留含义
+4. 维持语调：${toneMap[tone]}
+5. 注入灵魂
+
+## 配置
+- 优化强度：${intensity}/10
+- 目标语调：${toneMap[tone]}
+- 目标语言：${langMap[lang]}
+- 文本类型：${typeMap[type]}
+
+## 已选模式（${selected.length}个）
+${patternList}
+
+## 核心规则
+1. 删除填充短语
+2. 打破公式结构
+3. 变化节奏——混合句子长度
+4. 信任读者——直接陈述事实
+5. 删除金句
+
+## 输出要求
+1. 重写后的完整文本
+2. 修改摘要
+3. 质量评分（直接性/节奏/信任度/真实性/精炼度，各1-10分，总分50）
+${extra ? `\n## 附加要求\n${extra}` : ''}`;
+
+  const out = document.getElementById('hz-output');
+  out.textContent = hzPromptText;
+  document.getElementById('hz-copy-btn').style.display = 'inline-flex';
+
+  saveHistory('去 AI 味', hzPromptText);
+}
+
+async function hzCopy() {
+  if (!hzPromptText) return;
+  try {
+    await navigator.clipboard.writeText(hzPromptText);
+    showToast('已复制到剪贴板');
+  } catch { showToast('复制失败'); }
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderCatTabs();
+renderTemplates();
+renderHzPatterns();
+renderFavorites();
+renderHistory();
+</script>
+</body>
+</html>

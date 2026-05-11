@@ -772,7 +772,7 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
 <div class="anim-fade-up" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:28px;">
   <div>
     <h2 style="margin-bottom:4px;">学术论文提示词管理器</h2>
-    <div style="font-size:14px;color:var(--an-muted);transition:color 0.3s ease;">配置参数 · 管理大纲 · 生成提示词</div>
+    <div style="font-size:14px;color:var(--an-muted);transition:color 0.3s ease;">配置参数 · 管理大纲 · 生成提示词 · 写作优化 · 综述工作流</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;">
     <span class="badge badge-a"><i class="ti ti-file-text" aria-hidden="true"></i>版本 A</span>
@@ -789,6 +789,8 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   <button class="tab active" onclick="switchTab('params',this)"><i class="ti ti-settings" aria-hidden="true"></i> 论文参数</button>
   <button class="tab" onclick="switchTab('outline',this)"><i class="ti ti-list" aria-hidden="true"></i> 大纲管理</button>
   <button class="tab" onclick="switchTab('output',this)"><i class="ti ti-code" aria-hidden="true"></i> 生成提示词</button>
+  <button class="tab" onclick="switchTab('humanizer',this)"><i class="ti ti-feather" aria-hidden="true"></i> 写作优化</button>
+  <button class="tab" onclick="switchTab('workflow',this)"><i class="ti ti-route" aria-hidden="true"></i> 综述工作流</button>
 </div>
 
 <!-- ═══════ TAB 1: 参数 ═══════ -->
@@ -985,6 +987,259 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
 
 </div>
 
+<!-- ═══════ TAB 4: 写作优化 (Humanizer) ═══════ -->
+<div id="tab-humanizer" style="display:none" class="tab-panel">
+
+<!-- Header -->
+<div class="card">
+  <div class="section-title">去除 AI 痕迹 — 基于维基百科 AI 写作特征指南</div>
+  <div style="font-size:13px;color:var(--an-body);line-height:1.7;transition:color 0.3s ease;">
+    <p>检测并修复 <strong style="color:var(--an-ink)">24 种</strong> AI 写作痕迹。选择需要修复的模式，配置优化参数，一键生成可直接使用的系统提示词。</p>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+    <button class="copy-btn" onclick="hzSelectAll()"><i class="ti ti-checklist" aria-hidden="true"></i> 全选</button>
+    <button class="copy-btn" onclick="hzDeselectAll()"><i class="ti ti-circle-x" aria-hidden="true"></i> 全部取消</button>
+    <span style="font-size:12px;color:var(--an-muted);align-self:center;">已选 <strong id="hz-count">24</strong> / 24 个模式</span>
+  </div>
+</div>
+
+<!-- Category Filter -->
+<div class="card">
+  <div class="section-title">按类别筛选</div>
+  <div class="pill-row" id="hz-cat-pills">
+    <span class="pill selected" onclick="hzFilterCat('all',this)">全部</span>
+    <span class="pill" onclick="hzFilterCat('content',this)">内容模式</span>
+    <span class="pill" onclick="hzFilterCat('language',this)">语言语法</span>
+    <span class="pill" onclick="hzFilterCat('style',this)">风格模式</span>
+    <span class="pill" onclick="hzFilterCat('comm',this)">交流模式</span>
+    <span class="pill" onclick="hzFilterCat('filler',this)">填充回避</span>
+  </div>
+</div>
+
+<!-- 24 Patterns -->
+<div class="card">
+  <div class="section-title">AI 写作模式（点击选择/取消）</div>
+  <div id="hz-patterns" style="display:flex;flex-direction:column;gap:6px;"></div>
+</div>
+
+<!-- Config -->
+<div class="card">
+  <div class="section-title">优化配置</div>
+  <div class="grid2">
+    <div class="field">
+      <label>优化强度</label>
+      <div class="range-row">
+        <input type="range" id="hz-intensity" min="1" max="10" value="7" oninput="document.getElementById('hz-int-val').textContent=this.value;paintRange(this)">
+        <span class="range-val" id="hz-int-val">7</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--an-muted-soft);margin-top:4px;">
+        <span>轻度修改</span><span>深度重写</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>目标语调</label>
+      <select id="hz-tone">
+        <option value="neutral">中性客观</option>
+        <option value="casual">轻松随意</option>
+        <option value="professional">专业严谨</option>
+        <option value="academic">学术正式</option>
+        <option value="creative">创意表达</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="field">
+      <label>目标语言</label>
+      <select id="hz-lang">
+        <option value="zh-CN">简体中文</option>
+        <option value="en">English</option>
+        <option value="zh-TW">繁體中文</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>文本类型</label>
+      <select id="hz-type">
+        <option value="general">通用文本</option>
+        <option value="academic">学术论文</option>
+        <option value="blog">博客文章</option>
+        <option value="social">社交媒体</option>
+        <option value="business">商务文档</option>
+        <option value="creative">创意写作</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>附加要求（可选）</label>
+    <input type="text" id="hz-extra" placeholder="例如：保留所有专业术语、保持第一人称视角..." oninput="autosave()">
+  </div>
+</div>
+
+<button class="generate-btn" onclick="generateHumanizerPrompt()">
+  <i class="ti ti-feather" aria-hidden="true"></i> 生成写作优化提示词
+</button>
+
+<div id="humanizer-output-area" style="display:none">
+  <div class="output-box" id="humanizer-output-box"></div>
+  <div class="copy-row">
+    <button class="copy-btn" onclick="copyHumanizerOutput()"><i class="ti ti-copy" aria-hidden="true"></i> 复制全部</button>
+    <button class="copy-btn" onclick="sendHumanizerToChat()" style="background:var(--an-primary);color:var(--an-on-primary);border-color:var(--an-primary);"><i class="ti ti-send" aria-hidden="true"></i> 发送给 Claude</button>
+  </div>
+</div>
+
+</div>
+
+<!-- ═══════ TAB 5: 综述工作流 ═══════ -->
+<div id="tab-workflow" style="display:none" class="tab-panel">
+
+<!-- 流程说明 -->
+<div class="card">
+  <div class="section-title">AI 写综述的正确姿势</div>
+  <div style="font-size:13px;color:var(--an-body);line-height:1.8;transition:color 0.3s ease;">
+    <p style="margin-bottom:12px;">这套流程的核心思路：<strong style="color:var(--an-ink);">先找真实文献，再让 AI 基于文献写</strong>。文献是真的，引用是对的，AI 在这个框架里反而不那么"AI 腔"。</p>
+    <p style="margin-bottom:16px;">实测 AIGC 检测率 20% 出头。整个流程最花时间的不是写，是前面找文献、整文献。</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:0;">
+    <!-- Step 1 -->
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--an-primary);color:var(--an-on-primary);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">1</div>
+        <div style="width:2px;flex:1;min-height:24px;background:var(--an-hairline);margin:4px 0;"></div>
+      </div>
+      <div style="padding-bottom:20px;">
+        <div style="font-weight:600;font-size:14px;color:var(--an-ink);margin-bottom:4px;">找文献</div>
+        <div style="font-size:13px;color:var(--an-muted);line-height:1.6;">在知网、Google Scholar 等数据库搜你领域的新文献，找 8-12 篇相关的。重点看近 3-5 年的。</div>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--an-primary);color:var(--an-on-primary);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">2</div>
+        <div style="width:2px;flex:1;min-height:24px;background:var(--an-hairline);margin:4px 0;"></div>
+      </div>
+      <div style="padding-bottom:20px;">
+        <div style="font-weight:600;font-size:14px;color:var(--an-ink);margin-bottom:4px;">整理成 CSV</div>
+        <div style="font-size:13px;color:var(--an-muted);line-height:1.6;">把文献信息整理成两列表格：文件名 + 引用格式。Excel 另存为 .csv。没这个表 AI 引用会乱编。</div>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--an-primary);color:var(--an-on-primary);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">3</div>
+        <div style="width:2px;flex:1;min-height:24px;background:var(--an-hairline);margin:4px 0;"></div>
+      </div>
+      <div style="padding-bottom:20px;">
+        <div style="font-weight:600;font-size:14px;color:var(--an-ink);margin-bottom:4px;">喂给 AI 写初稿</div>
+        <div style="font-size:13px;color:var(--an-muted);line-height:1.6;">把文献 PDF 和 CSV 一起丢给 AI，用下面生成的提示词，让它输出 Markdown 初稿。</div>
+      </div>
+    </div>
+    <!-- Step 4 -->
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--an-primary);color:var(--an-on-primary);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">4</div>
+        <div style="width:2px;flex:1;min-height:24px;background:var(--an-hairline);margin:4px 0;"></div>
+      </div>
+      <div style="padding-bottom:20px;">
+        <div style="font-weight:600;font-size:14px;color:var(--an-ink);margin-bottom:4px;">Pandoc 转 Word</div>
+        <div style="font-size:13px;color:var(--an-muted);line-height:1.6;">用 Pandoc 把 Markdown 转成 docx。学校要 Word，Pandoc 有学术论文模板，转出来格式凑合能用。</div>
+      </div>
+    </div>
+    <!-- Step 5 -->
+    <div style="display:flex;gap:14px;align-items:flex-start;">
+      <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--an-success);color:var(--an-on-primary);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;">5</div>
+      </div>
+      <div style="padding-bottom:4px;">
+        <div style="font-weight:600;font-size:14px;color:var(--an-ink);margin-bottom:4px;">完成</div>
+        <div style="font-size:13px;color:var(--an-muted);line-height:1.6;">检查一遍，交作业。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 配置 -->
+<div class="card">
+  <div class="section-title">综述配置</div>
+  <div class="grid2">
+    <div class="field">
+      <label>综述主题</label>
+      <input type="text" id="wfTopic" placeholder="例：大语言模型在医学影像诊断中的应用" oninput="autosave()">
+    </div>
+    <div class="field">
+      <label>学科领域</label>
+      <input type="text" id="wfField" placeholder="例：计算机科学 / 人工智能" oninput="autosave()">
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="field">
+      <label>目标字数</label>
+      <select id="wfWords">
+        <option value="3000">3000 字</option>
+        <option value="5000" selected>5000 字</option>
+        <option value="8000">8000 字</option>
+        <option value="10000">10000 字</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>引用格式</label>
+      <select id="wfCitation">
+        <option value="GB/T 7714-2015">GB/T 7714-2015</option>
+        <option value="APA 7th">APA 7th</option>
+        <option value="MLA 9th">MLA 9th</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>文献数量</label>
+    <select id="wfPaperCount">
+      <option value="8">8 篇</option>
+      <option value="10" selected>10 篇</option>
+      <option value="12">12 篇</option>
+      <option value="15">15 篇</option>
+    </select>
+  </div>
+  <div class="field">
+    <label>特殊要求（可选）</label>
+    <input type="text" id="wfExtra" placeholder="例：侧重国内研究 / 需要包含对比表格 / 关注 2020 年以后的文献" oninput="autosave()">
+  </div>
+</div>
+
+<!-- 生成按钮组 -->
+<div style="display:flex;gap:10px;margin-top:16px;">
+  <button class="copy-btn" onclick="generateWfCSV()" style="flex:1;justify-content:center;padding:12px;"><i class="ti ti-table" aria-hidden="true"></i> 生成 CSV 模板</button>
+  <button class="generate-btn" onclick="generateWfPrompt()" style="flex:2;margin-top:0;"><i class="ti ti-route" aria-hidden="true"></i> 生成完整工作流提示词</button>
+  <button class="copy-btn" onclick="generateWfPandoc()" style="flex:1;justify-content:center;padding:12px;"><i class="ti ti-terminal" aria-hidden="true"></i> Pandoc 命令</button>
+</div>
+
+<!-- CSV 输出 -->
+<div id="wf-csv-area" style="display:none">
+  <div style="font-weight:600;font-size:14px;color:var(--an-ink);margin:20px 0 8px;transition:color 0.3s ease;">CSV 模板（复制后用 Excel 打开，填入你的文献信息，另存为 .csv）</div>
+  <div class="output-box" id="wf-csv-box"></div>
+  <div class="copy-row">
+    <button class="copy-btn" onclick="copyWfCSV()"><i class="ti ti-copy" aria-hidden="true"></i> 复制 CSV</button>
+  </div>
+</div>
+
+<!-- 主提示词输出 -->
+<div id="wf-output-area" style="display:none">
+  <div class="output-box" id="wf-output-box"></div>
+  <div class="copy-row">
+    <button class="copy-btn" onclick="copyWfOutput()"><i class="ti ti-copy" aria-hidden="true"></i> 复制全部</button>
+    <button class="copy-btn" onclick="sendWfToChat()" style="background:var(--an-primary);color:var(--an-on-primary);border-color:var(--an-primary);"><i class="ti ti-send" aria-hidden="true"></i> 发送给 Claude</button>
+  </div>
+</div>
+
+<!-- Pandoc 输出 -->
+<div id="wf-pandoc-area" style="display:none">
+  <div style="font-weight:600;font-size:14px;color:var(--an-ink);margin:20px 0 8px;transition:color 0.3s ease;">Pandoc 转换命令</div>
+  <div class="output-box" id="wf-pandoc-box" style="font-family:'SFMono-Regular',Menlo,Consolas,monospace;font-size:13px;"></div>
+  <div class="copy-row">
+    <button class="copy-btn" onclick="copyWfPandoc()"><i class="ti ti-copy" aria-hidden="true"></i> 复制命令</button>
+  </div>
+</div>
+
+</div>
+
 <!-- Developer Footer -->
 <div class="dev-footer anim-fade-up" style="animation-delay:300ms;">
   <span>Designed & built by </span>
@@ -1027,7 +1282,7 @@ let dragAllowed = false;
 
 // ── Tabs ──
 function switchTab(name, btn) {
-  const panels = ['params','outline','output'];
+  const panels = ['params','outline','output','humanizer','workflow'];
   panels.forEach(t => {
     const el = document.getElementById('tab-'+t);
     if (t === name) {
@@ -1073,6 +1328,450 @@ function toggleCustomPaperType() {
   } else {
     custom.style.display = 'none';
   }
+}
+
+// ── Humanizer: 24 AI Patterns Data ──
+const hzPatterns = [
+  { id:1, name:'过度强调意义', cat:'content', brief:'夸大的象征意义、遗产和更广泛趋势', kw:'作为/标志着/见证了/是……的体现' },
+  { id:2, name:'过度强调知名度', cat:'content', brief:'反复强调媒体报道和知名度主张', kw:'独立报道/地方媒体/由知名专家' },
+  { id:3, name:'肤浅的 -ing 分析', cat:'content', brief:'用现在分词短语增加虚假深度', kw:'突出/强调/彰显……/确保……' },
+  { id:4, name:'宣传广告式语言', cat:'content', brief:'夸张的宣传性用语', kw:'充满活力的/丰富的/令人叹为观止' },
+  { id:5, name:'模糊归因', cat:'content', brief:'将观点归因于模糊权威而非具体来源', kw:'行业报告/观察者指出/专家认为' },
+  { id:6, name:'提纲式挑战展望', cat:'content', brief:'公式化的"挑战与未来展望"部分', kw:'尽管其……面临挑战/未来展望' },
+  { id:7, name:'AI 高频词汇', cat:'language', brief:'过度使用特定的 AI 偏好词汇', kw:'此外/至关重要/深入探讨/格局/复杂性' },
+  { id:8, name:'系动词回避', cat:'language', brief:'用复杂结构替代简单的"是"', kw:'作为/代表/标志着/充当' },
+  { id:9, name:'否定式排比', cat:'language', brief:'过度使用"不仅……而且……"结构', kw:'不仅仅……而是……' },
+  { id:10, name:'三段式法则', cat:'language', brief:'强行将想法分成三组', kw:'三项并列列举' },
+  { id:11, name:'刻意换词', cat:'language', brief:'过度使用同义词替换避免重复', kw:'近义词循环替换' },
+  { id:12, name:'虚假范围', cat:'language', brief:'使用"从X到Y"结构但无实际意义', kw:'从……到……的旅程' },
+  { id:13, name:'破折号过度使用', cat:'style', brief:'比人类更频繁地使用破折号', kw:'——' },
+  { id:14, name:'粗体过度使用', cat:'style', brief:'机械地用粗体强调短语', kw:'**粗体**' },
+  { id:15, name:'内联标题列表', cat:'style', brief:'列表项以粗体标题+冒号开头', kw:'- **标题：**' },
+  { id:16, name:'标题大写', cat:'style', brief:'标题中所有主要单词大写（英文）', kw:'Title Case Headings' },
+  { id:17, name:'表情符号滥用', cat:'style', brief:'用表情符号装饰标题或项目符号', kw:'🚀 💡 ✅' },
+  { id:18, name:'弯引号', cat:'style', brief:'使用弯引号而非直引号', kw:'双引号 单引号' },
+  { id:19, name:'协作交流痕迹', cat:'comm', brief:'聊天机器人对话痕迹被粘贴为内容', kw:'希望这对您有帮助/请告诉我' },
+  { id:20, name:'知识截止免责声明', cat:'comm', brief:'AI知识截止日期免责声明残留', kw:'截至[日期]/根据我的训练更新' },
+  { id:21, name:'谄媚讨好语气', cat:'comm', brief:'过于积极、讨好的语言', kw:'好问题！/您说得完全正确' },
+  { id:22, name:'填充短语', cat:'filler', brief:'冗长的开场白和强调性拐杖词', kw:'值得注意的是/为了实现这一目标' },
+  { id:23, name:'过度限定', cat:'filler', brief:'过度限定陈述，削弱表达力', kw:'可以潜在地可能被认为' },
+  { id:24, name:'通用积极结论', cat:'filler', brief:'模糊乐观的结尾，缺乏具体信息', kw:'未来看起来光明/激动人心的时代' },
+];
+
+let hzSelected = new Set(hzPatterns.map(p => p.id));
+let hzCurrentCat = 'all';
+
+// ── Humanizer: Render Patterns ──
+function renderHzPatterns() {
+  const grid = document.getElementById('hz-patterns');
+  const filtered = hzCurrentCat === 'all' ? hzPatterns : hzPatterns.filter(p => p.cat === hzCurrentCat);
+  grid.innerHTML = filtered.map(p => {
+    const sel = hzSelected.has(p.id);
+    return `<div class="outline-item" style="cursor:pointer;padding:10px 14px;animation:none;${sel?'border-color:var(--an-primary);background:rgba(204,120,92,0.06);':''}" onclick="toggleHzPattern(${p.id})">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:18px;height:18px;border-radius:4px;border:2px solid ${sel?'var(--an-primary)':'var(--an-hairline)'};background:${sel?'var(--an-primary)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s ease;">
+          ${sel?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:11px;font-weight:600;color:var(--an-primary);letter-spacing:0.5px;">#${p.id} · ${p.cat.toUpperCase()}</div>
+          <div style="font-size:14px;font-weight:600;color:var(--an-ink);transition:color 0.3s ease;">${p.name}</div>
+          <div style="font-size:12px;color:var(--an-muted);margin-top:2px;">${p.brief}</div>
+        </div>
+        <div style="font-size:11px;color:var(--an-muted-soft);max-width:120px;text-align:right;">${p.kw}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('hz-count').textContent = hzSelected.size;
+}
+
+function toggleHzPattern(id) {
+  hzSelected.has(id) ? hzSelected.delete(id) : hzSelected.add(id);
+  renderHzPatterns();
+}
+
+function hzSelectAll() {
+  hzPatterns.forEach(p => hzSelected.add(p.id));
+  hzCurrentCat = 'all';
+  document.querySelectorAll('#hz-cat-pills .pill').forEach((p,i)=>{
+    p.classList.toggle('selected', i===0);
+  });
+  renderHzPatterns();
+}
+
+function hzDeselectAll() {
+  hzSelected.clear();
+  renderHzPatterns();
+}
+
+function hzFilterCat(cat, el) {
+  hzCurrentCat = cat;
+  document.querySelectorAll('#hz-cat-pills .pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+  renderHzPatterns();
+}
+
+// ── Humanizer: Generate Prompt ──
+function generateHumanizerPrompt() {
+  if (hzSelected.size === 0) { showToast('请至少选择一个 AI 模式'); return; }
+
+  const intensity = parseInt(document.getElementById('hz-intensity').value);
+  const tone = document.getElementById('hz-tone').value;
+  const lang = document.getElementById('hz-lang').value;
+  const type = document.getElementById('hz-type').value;
+  const extra = document.getElementById('hz-extra').value.trim();
+
+  const toneMap = { neutral:'中性客观', casual:'轻松随意', professional:'专业严谨', academic:'学术正式', creative:'创意表达' };
+  const typeMap = { general:'通用文本', academic:'学术论文', blog:'博客文章', social:'社交媒体', business:'商务文档', creative:'创意写作' };
+  const langMap = { 'zh-CN':'简体中文', en:'English', 'zh-TW':'繁體中文' };
+
+  const intensityDesc = intensity <= 3
+    ? '轻度优化：微调措辞，保留大部分原文结构'
+    : intensity <= 6
+    ? '中度优化：重写有问题的段落，改善表达方式'
+    : '深度重写：大幅重构文本，注入个性化表达，彻底消除 AI 痕迹';
+
+  const selected = hzPatterns.filter(p => hzSelected.has(p.id));
+  const patternList = selected.map(p => `- **#${p.id} ${p.name}**：${p.brief}（关键词：${p.kw}）`).join('\n');
+
+  // Build core rules based on selected patterns
+  const cats = new Set(selected.map(p => p.cat));
+  const rules = [
+    '1. **删除填充短语** — 去除开场白和强调性拐杖词',
+    '2. **打破公式结构** — 避免二元对比、戏剧性分段、修辞性设置',
+    '3. **变化节奏** — 混合句子长度。两项优于三项。段落结尾要多样化',
+    '4. **信任读者** — 直接陈述事实，跳过软化、辩解和手把手引导',
+    '5. **删除金句** — 如果听起来像可引用的语句，重写它',
+  ];
+
+  if (cats.has('content')) {
+    rules.push('', '**内容模式规则：**');
+    rules.push('- 删除"作为……的证明"类夸大的象征意义陈述');
+    rules.push('- 用具体事实替代模糊的宣传性语言');
+    rules.push('- 删除模糊归因（"专家认为"），如有具体来源则替换');
+    rules.push('- 删除公式化的"挑战与未来展望"部分');
+  }
+  if (cats.has('language')) {
+    rules.push('', '**语言模式规则：**');
+    rules.push('- 替换所有 AI 高频词汇（此外、至关重要、格局、复杂性等）');
+    rules.push('- 用简单的"是/有"替代"作为/代表/标志着"等复杂结构');
+    rules.push('- 删除"不仅……而且……"等否定式排比');
+    rules.push('- 三项并列改为两项或四项');
+  }
+  if (cats.has('style')) {
+    rules.push('', '**风格模式规则：**');
+    rules.push('- 减少破折号使用，改用逗号或句号');
+    rules.push('- 移除不必要的粗体标记');
+    rules.push('- 将粗体标题+冒号的列表格式改为连贯的段落');
+  }
+  if (cats.has('comm')) {
+    rules.push('', '**交流模式规则：**');
+    rules.push('- 删除所有聊天机器人对话痕迹（希望这对您有帮助、请告诉我）');
+    rules.push('- 删除知识截止日期免责声明');
+    rules.push('- 删除谄媚讨好的语气');
+  }
+  if (cats.has('filler')) {
+    rules.push('', '**填充词规则：**');
+    rules.push('- 替换冗长填充短语为简短表达');
+    rules.push('- 删除过度限定，直接陈述');
+    rules.push('- 用具体结论替代通用积极结尾');
+  }
+
+  if (intensity >= 7) {
+    rules.push('', '**深度重写要求：**');
+    rules.push('- 重新组织段落结构，不要保留原文的分段逻辑');
+    rules.push('- 注入第一人称视角和个人观点（如适当）');
+    rules.push('- 使用具体的、非模板化的开头和结尾');
+    rules.push('- 确保每句话都有独特的声音和节奏');
+  }
+  if (intensity <= 3) {
+    rules.push('', '**轻度修改要求：**');
+    rules.push('- 保留原文大部分结构，只修改最明显的 AI 痕迹');
+    rules.push('- 优先处理高频词汇和填充短语');
+    rules.push('- 不改变段落顺序');
+  }
+
+  const toneGuidance = {
+    neutral: '- 保持客观中立，不带个人情感\n- 直接陈述事实和数据\n- 避免任何立场性表述',
+    casual: '- 像在和朋友聊天\n- 可以使用口语化表达\n- 允许一些不正式的句式\n- 可以有个人观点和感受',
+    professional: '- 保持专业但不冷漠\n- 使用行业术语但不过度\n- 结构清晰，逻辑严密\n- 结论明确，有理有据',
+    academic: '- 严谨的学术表达\n- 适当的引用和引述\n- 避免口语化和情感化\n- 逻辑推导清晰',
+    creative: '- 允许修辞手法和文学性表达\n- 可以有节奏感和韵律\n- 鼓励独特的比喻和意象\n- 保持新鲜感',
+  };
+
+  const langRule = lang === 'zh-CN'
+    ? '用中文回复。保持中文的自然节奏，不要受英文句式影响。'
+    : lang === 'en'
+    ? 'Reply in English. Keep natural English rhythm, avoid translated-Chinese sentence patterns.'
+    : '根据原文语言自动判断。中文部分保持中文，英文部分保持英文。';
+
+  const prompt = `# 去 AI 味 — 人性化处理系统提示词
+
+## 角色设定
+
+你是一位专业的文字编辑，专门识别和去除 AI 生成文本的痕迹。你基于维基百科的"AI 写作特征"指南（WikiProject AI Cleanup 维护），对文本进行精准的人性化处理。
+
+## 你的任务
+
+当收到需要人性化处理的文本时：
+
+1. **识别 AI 模式** — 扫描下面列出的所有模式
+2. **重写问题片段** — 用自然的替代方案替换 AI 痕迹
+3. **保留含义** — 保持核心信息完整，不改变事实和观点
+4. **维持语调** — 匹配目标语调：${toneMap[tone]}
+5. **注入灵魂** — 不仅去除不良模式，还要注入真实的个性和声音
+
+## 配置信息
+
+| 参数 | 值 |
+|------|-----|
+| 优化强度 | ${intensity}/10 — ${intensityDesc} |
+| 目标语调 | ${toneMap[tone]} |
+| 目标语言 | ${langMap[lang]} |
+| 文本类型 | ${typeMap[type]} |
+
+## 需要修复的 AI 模式（${selected.length} 个）
+
+${patternList}
+
+## 核心规则
+
+${rules.join('\n')}
+
+## 语调要求：${toneMap[tone]}
+
+${toneGuidance[tone] || toneGuidance.neutral}
+
+## 语言要求
+
+${langRule}
+
+## 处理流程
+
+1. 仔细阅读输入文本
+2. 识别上述所有已选模式的实例
+3. 重写每个有问题的部分
+4. 确保修订后的文本：
+   - 大声朗读时听起来自然
+   - 自然地改变句子结构和节奏
+   - 使用具体细节而不是模糊的主张
+   - 为上下文保持适当的语气（${toneMap[tone]}）
+   - 适当时使用简单的结构（是/有）
+5. 呈现人性化版本
+
+## 质量评分
+
+对改写后的文本进行 5 维度评分（每项 1-10 分，总分 50）：
+
+| 维度 | 评估标准 |
+|------|----------|
+| **直接性** | 直接陈述事实还是绕圈宣告？ |
+| **节奏** | 句子长度是否变化？长短交错？ |
+| **信任度** | 是否尊重读者智慧，不过度解释？ |
+| **真实性** | 听起来像真人说话吗？有个性吗？ |
+| **精炼度** | 还有可删减的内容吗？无冗余？ |
+
+**评分标准：**
+- 45-50 分：优秀，已去除 AI 痕迹
+- 35-44 分：良好，仍有改进空间
+- 低于 35 分：需要重新修订
+
+## 快速检查清单
+
+交付文本前，逐项检查：
+
+- 连续三个句子长度是否相同？→ 打断其中一个
+- 段落是否都以简洁单行结尾？→ 变换结尾方式
+- 揭示前是否有破折号？→ 删除它
+- 是否在解释隐喻？→ 相信读者能理解
+- 是否过度使用"此外""然而"等连接词？→ 考虑删除
+- 是否三段式列举？→ 改为两项或四项
+
+## 输出格式
+
+请提供：
+
+1. **重写后的完整文本**
+2. **修改摘要**（列出主要改动）
+3. **质量评分表**（5 维度打分 + 总分）
+${extra ? `\n## 附加要求\n${extra}` : ''}`;
+
+  document.getElementById('humanizer-output-box').textContent = prompt;
+  document.getElementById('humanizer-output-area').style.display = 'block';
+}
+
+// ── Humanizer: Copy ──
+function copyHumanizerOutput() {
+  const text = document.getElementById('humanizer-output-box').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> 已复制';
+    setTimeout(()=>btn.innerHTML=orig,1800);
+  });
+}
+
+// ── Humanizer: Send ──
+function sendHumanizerToChat() {
+  const text = document.getElementById('humanizer-output-box').textContent;
+  if(typeof sendPrompt==='function') sendPrompt(text);
+}
+
+// ═══════ Workflow Functions ═══════
+
+function generateWfCSV() {
+  const count = parseInt(document.getElementById('wfPaperCount').value);
+  const fmt = document.getElementById('wfCitation').value;
+  let csv = 'filename,citation\n';
+  for (let i = 1; i <= count; i++) {
+    csv += `paper_${i}.pdf,【在此粘贴 ${fmt} 格式的引用】\n`;
+  }
+  document.getElementById('wf-csv-box').textContent = csv;
+  document.getElementById('wf-csv-area').style.display = 'block';
+}
+
+function copyWfCSV() {
+  const text = document.getElementById('wf-csv-box').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> 已复制';
+    setTimeout(()=>btn.innerHTML=orig,1800);
+  });
+}
+
+function generateWfPrompt() {
+  const topic = document.getElementById('wfTopic').value.trim() || '【填写综述主题】';
+  const field = document.getElementById('wfField').value.trim() || '【填写学科领域】';
+  const words = document.getElementById('wfWords').value;
+  const citation = document.getElementById('wfCitation').value;
+  const count = document.getElementById('wfPaperCount').value;
+  const extra = document.getElementById('wfExtra').value.trim();
+
+  const prompt = `你是一位资深的中文学术综述写作专家，熟悉 ${field} 领域的研究进展。
+
+## 任务
+
+基于我提供的文献（PDF 文件）和文献清单（CSV 文件），撰写一篇关于「${topic}」的学术综述。
+
+## 工作方式
+
+1. 先阅读 CSV 文件，了解每篇文献的引用信息
+2. 逐一阅读我提供的 PDF 文献，提取各文献的核心观点、方法和结论
+3. 按照以下大纲结构组织综述，确保每个部分都有文献支撑
+4. 所有引用必须严格使用 CSV 中的引用格式，不得虚构任何文献
+
+## 综述大纲（请按此结构撰写）
+
+1. 引言（约 ${Math.round(parseInt(words)*0.1).toLocaleString()} 字）
+   - 研究背景与意义
+   - 综述范围与方法说明
+
+2. ${topic} 的发展脉络（约 ${Math.round(parseInt(words)*0.15).toLocaleString()} 字）
+   - 早期研究
+   - 近年进展
+
+3. 核心方法/理论/技术梳理（约 ${Math.round(parseInt(words)*0.35).toLocaleString()} 字）
+   - 按主题或方法分类梳理各文献的核心贡献
+   - 对比不同研究的异同
+
+4. 现有研究的不足与展望（约 ${Math.round(parseInt(words)*0.2).toLocaleString()} 字）
+   - 当前研究的局限性
+   - 未来可能的研究方向
+
+5. 结论（约 ${Math.round(parseInt(words)*0.1).toLocaleString()} 字）
+   - 总结核心发现
+   - 强调研究意义
+
+## 写作规范
+
+- 全文约 ${parseInt(words).toLocaleString()} 字（不含参考文献）
+- 使用"本文""本综述"，不得使用"我"
+- 引用格式严格遵循 ${citation}
+- 每段首句为主题句，段落之间有逻辑衔接
+- 禁止空洞套语："综上所述""由此可见""不言而喻"
+- 禁止 AI 腔："值得注意的是""不可忽视的是""具有重要意义"
+- 数字用阿拉伯数字，百分比用阿拉伯数字
+- 专业术语首次出现须给出全称或定义
+
+## 输出格式
+
+直接输出 Markdown 格式的综述全文，结构为：
+
+\`\`\`
+# [综述标题]
+
+## 摘要
+（200-300字）
+
+关键词：词1；词2；词3
+
+## 1 引言
+[正文]
+
+## 2 [章节标题]
+[正文]
+
+...（按大纲展开）
+
+## 参考文献
+[按 ${citation} 格式，从 CSV 中提取]
+\`\`\` ${extra ? `\n\n## 额外要求\n${extra}` : ''}`;
+
+  document.getElementById('wf-output-box').textContent = prompt;
+  document.getElementById('wf-output-area').style.display = 'block';
+}
+
+function copyWfOutput() {
+  const text = document.getElementById('wf-output-box').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> 已复制';
+    setTimeout(()=>btn.innerHTML=orig,1800);
+  });
+}
+
+function sendWfToChat() {
+  const text = document.getElementById('wf-output-box').textContent;
+  if(typeof sendPrompt==='function') sendPrompt(text);
+}
+
+function generateWfPandoc() {
+  const cmd = `# 安装 Pandoc（如果还没装）
+# Windows: https://pandoc.org/installing.html
+# macOS: brew install pandoc
+# Linux: sudo apt install pandoc
+
+# 基础转换
+pandoc draft.md -o output.docx
+
+# 带参考文献的转换（需要 references.bib 文件）
+pandoc draft.md --citeproc --bibliography=references.bib -o output.docx
+
+# 使用学术论文模板（如果安装了 template.docx）
+pandoc draft.md --reference-doc=template.docx -o output.docx
+
+# 一步到位：带引用 + 页边距 + 字体
+pandoc draft.md \\
+  --citeproc \\
+  --bibliography=references.bib \\
+  --reference-doc=template.docx \\
+  -o 综述终稿.docx
+
+# 提示：如果 CSV 里的引用信息需要转成 BibTeX 格式，
+# 可以用 Zotero 导出 .bib 文件，然后用 --bibliography 参数`;
+  document.getElementById('wf-pandoc-box').textContent = cmd;
+  document.getElementById('wf-pandoc-area').style.display = 'block';
+}
+
+function copyWfPandoc() {
+  const text = document.getElementById('wf-pandoc-box').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> 已复制';
+    setTimeout(()=>btn.innerHTML=orig,1800);
+  });
 }
 
 // ── Pills ──
@@ -1329,9 +2028,26 @@ function paintRange(el) {
   el.style.background = `linear-gradient(to right, var(--an-primary) ${pct}%, var(--an-surface-soft) ${pct}%)`;
 }
 
+// ── Toast ──
+function showToast(msg) {
+  let t = document.getElementById('app-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'app-toast';
+    t.style.cssText = 'position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--an-ink);color:var(--an-canvas);font-size:13px;font-weight:600;padding:10px 24px;border-radius:8px;opacity:0;transition:transform 0.3s ease,opacity 0.3s ease;pointer-events:none;z-index:200;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(-50%) translateY(20px)'; }, 2000);
+}
+
 // ── Init ──
 updateTotalWords();
 renderOutline();
+renderHzPatterns();
+paintRange(document.getElementById('hz-intensity'));
 </script>
 </body>
 </html>
