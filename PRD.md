@@ -182,32 +182,23 @@ papro 起初是一个学术论文提示词生成工具（`prompt_manager.html`�
 - 动画：fadeUp、fadeIn、scaleIn、pillPop、shimmer
 
 ### 4.2 writer.html — 通用写作管理器
+- 画布色：奶油色 `#faf9f5`
+- 主色：珊瑚色 `#cc785c`
+- 深色表面：`#181715`
+- 字体：Cormorant Garamond（标题）+ Inter（正文）
+- 圆角：8px-12px
+- 暗色模式：CSS 变量 + `html.dark` 类，localStorage 持久化
+- 动画：fadeUp、fadeIn、scaleIn、pillPop、shimmer
 
-遵循 BMW M 设计规范（`BMW_DESIGN.MD`）：
-- 纯黑画布 `#000000`，白色文字
-- M 三色条纹（蓝-深蓝-红）装饰线
-- 方形按钮（0px 圆角），大写字母 + 1.5px 字间距
-- 标题 700 字重 vs 正文 300 字重
-
-功能：
-- 25 个场景模板（5 大类别）
-- 集成去 AI 味功能（24 种模式）
-- 收藏 + 历史（localStorage）
-- 搜索 + 分类筛选
 
 ### 4.3 humanizer.html — 去 AI 味独立版
-
-遵循 Apple 设计规范（`apple_design.md`）：
-- 白色/羊皮纸画布，单一蓝色 `#0066cc` 强调色
-- 药丸形按钮
-- 暗色模式（默认跟随系统偏好）
-
-功能：
-- 24 种 AI 写作痕迹检测
-- 按类别筛选
-- 优化强度/语调/文本类型配置
-- 完整系统提示词生成
-
+- 画布色：奶油色 `#faf9f5`
+- 主色：珊瑚色 `#cc785c`
+- 深色表面：`#181715`
+- 字体：Cormorant Garamond（标题）+ Inter（正文）
+- 圆角：8px-12px
+- 暗色模式：CSS 变量 + `html.dark` 类，localStorage 持久化
+- 动画：fadeUp、fadeIn、scaleIn、pillPop、shimmer
 ## 5. 技术架构
 
 ### 5.1 技术选型
@@ -298,11 +289,7 @@ papro/
 - [x] 质量评分体系（5 维度 /50 分）
 - [x] 综述工作流标签页
 
-### Phase 3：独立应用 ✅
 
-- [x] `writer.html` — BMW M 设计通用写作管理器
-- [x] `humanizer.html` — Apple 设计去 AI 味独立版
-- [x] 设计规范文档（design.md / apple_design.md / BMW_DESIGN.MD）
 
 ### Phase 4：待实现
 
