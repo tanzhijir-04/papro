@@ -866,22 +866,49 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
 .dev-footer .sponsor-link {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 14px;
-  border-radius: var(--r-pill);
-  background: var(--an-primary-soft);
+  gap: 3px;
   color: var(--an-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+.dev-footer .sponsor-link:hover {
+  color: var(--an-primary-hover);
+  text-decoration: underline;
+}
+
+/* ── Header Sponsor Button ── */
+.sponsor-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: var(--r-pill);
+  background: linear-gradient(135deg, #c2694f, #e8845c);
+  color: #fff;
+  font-family: 'Noto Sans SC', sans-serif;
   font-size: 12px;
   font-weight: 600;
   text-decoration: none;
-  margin-bottom: 10px;
-  transition: all 0.2s var(--ease-out);
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(194, 105, 79, 0.35);
+  transition: all 0.25s var(--ease-out);
+  animation: sponsorPulse 2.5s ease-in-out infinite;
 }
-.dev-footer .sponsor-link:hover {
-  background: var(--an-primary);
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(194, 105, 79, 0.3);
+.sponsor-btn:hover {
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 4px 14px rgba(194, 105, 79, 0.45);
+  background: linear-gradient(135deg, #a8543c, #c2694f);
+}
+.sponsor-btn:active {
+  transform: scale(0.96);
+}
+.sponsor-btn i {
+  font-size: 13px;
+}
+@keyframes sponsorPulse {
+  0%, 100% { box-shadow: 0 2px 8px rgba(194, 105, 79, 0.35); }
+  50% { box-shadow: 0 2px 14px rgba(194, 105, 79, 0.55); }
 }
 
 /* ── Tab Panel ── */

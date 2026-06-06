@@ -113,6 +113,9 @@ export function App() {
               </h2>
             </div>
             <div className="header-badges" style={{ display: "flex", gap: 6, alignItems: "center" }}>
+              <a href="https://ifdian.net/a/tanz666/plan" target="_blank" rel="noopener noreferrer" className="sponsor-btn">
+                <i className="ti ti-heart-filled" aria-hidden="true"></i>赞助
+              </a>
               <span className="badge badge-a">
                 <i className="ti ti-file-text" aria-hidden="true"></i>版本 A
               </span>
@@ -143,15 +146,15 @@ export function App() {
 
           {/* Footer */}
           <div className="dev-footer">
-            <a href="https://ifdian.net/a/tanz666/plan" target="_blank" rel="noopener noreferrer" className="sponsor-link">
-              <i className="ti ti-heart" aria-hidden="true"></i> 赞助支持
-            </a>
-            <br />
             Designed & built by{" "}
             <span className="dev-name">tanzhijir-04</span>{" "}
             · <a href="https://github.com/tanzhijir-04/papro" target="_blank" rel="noopener noreferrer">GitHub</a>
             {" · "}
             <span style={{ color: "var(--an-muted-soft)" }}>知更·Paper</span>
+            {" · "}
+            <a href="https://ifdian.net/a/tanz666/plan" target="_blank" rel="noopener noreferrer" className="sponsor-link">
+              <i className="ti ti-heart" aria-hidden="true"></i>赞助
+            </a>
           </div>
         </div>
       </main>
