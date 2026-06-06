@@ -143,6 +143,10 @@ export function App() {
 
           {/* Footer */}
           <div className="dev-footer">
+            <a href="https://ifdian.net/a/tanz666/plan" target="_blank" rel="noopener noreferrer" className="sponsor-link">
+              <i className="ti ti-heart" aria-hidden="true"></i> 赞助支持
+            </a>
+            <br />
             Designed & built by{" "}
             <span className="dev-name">tanzhijir-04</span>{" "}
             · <a href="https://github.com/tanzhijir-04/papro" target="_blank" rel="noopener noreferrer">GitHub</a>

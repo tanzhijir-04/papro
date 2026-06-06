@@ -863,6 +863,26 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   font-weight: 600;
   color: var(--an-muted);
 }
+.dev-footer .sponsor-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 14px;
+  border-radius: var(--r-pill);
+  background: var(--an-primary-soft);
+  color: var(--an-primary);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 10px;
+  transition: all 0.2s var(--ease-out);
+}
+.dev-footer .sponsor-link:hover {
+  background: var(--an-primary);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(194, 105, 79, 0.3);
+}
 
 /* ── Tab Panel ── */
 .tab-panel {

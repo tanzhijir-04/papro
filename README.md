@@ -9,6 +9,7 @@
 配置参数 · 管理大纲 · 生成提示词 · 论文审阅 · 写作优化 · 写作指南
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-c2694f.svg)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/❤️_赞助-爱发电-c2694f.svg)](https://ifdian.net/a/tanz666/plan)
 
 </div>
 
@@ -171,6 +172,12 @@ wrangler pages deploy dist --project-name=zgpaper
 - 全球 CDN 加速，国内访问速度也不错
 - 支持自动 HTTPS
 - SPA 路由：本项目是单页应用，无需额外配置，Cloudflare Pages 默认支持
+
+## 赞助支持
+
+如果知更·Paper 对你有帮助，欢迎请作者喝杯咖啡 ☕
+
+[❤️ 爱发电赞助](https://ifdian.net/a/tanz666/plan)
 
 ## 许可
 
