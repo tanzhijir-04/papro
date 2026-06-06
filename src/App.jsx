@@ -1,3 +1,4 @@
+import { useRef, useCallback, useEffect } from "preact/hooks";
 import { currentTab, toggleTheme } from "./store.js";
 import { TabBar } from "./components/TabBar.jsx";
 import { PaperParams } from "./components/PaperParams.jsx";
@@ -15,12 +16,72 @@ const TAB_COMPONENTS = {
   humanizer: Humanizer,
 };
 
+const MIN_W = 320;
+const MAX_W = 700;
+const DEFAULT_W = 420;
+
+function initGuideW() {
+  try {
+    const v = parseInt(localStorage.getItem("guide-w"), 10);
+    return v >= MIN_W && v <= MAX_W ? v : DEFAULT_W;
+  } catch { return DEFAULT_W; }
+}
+
 export function App() {
   const tab = currentTab.value;
   const TabComponent = TAB_COMPONENTS[tab];
+  const layoutRef = useRef(null);
+  const dragging = useRef(false);
+  const guideW = useRef(initGuideW());
+
+  // Apply width to CSS variable
+  const applyW = useCallback((w) => {
+    guideW.current = w;
+    if (layoutRef.current) {
+      layoutRef.current.style.setProperty("--guide-w", w + "px");
+    }
+  }, []);
+
+  // Initialize on mount
+  useEffect(() => { applyW(guideW.current); }, []);
+
+  // Drag handlers
+  const onDown = useCallback((e) => {
+    e.preventDefault();
+    dragging.current = true;
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+
+    const startX = e.clientX ?? e.touches?.[0]?.clientX ?? 0;
+    const startW = guideW.current;
+
+    const onMove = (ev) => {
+      if (!dragging.current) return;
+      const cx = ev.clientX ?? ev.touches?.[0]?.clientX ?? 0;
+      const delta = startX - cx; // dragging left = wider guide
+      const newW = Math.round(Math.min(MAX_W, Math.max(MIN_W, startW + delta)));
+      applyW(newW);
+    };
+
+    const onUp = () => {
+      dragging.current = false;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      try { localStorage.setItem("guide-w", guideW.current); } catch {}
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onUp);
+    };
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onUp);
+  }, [applyW]);
 
   return (
-    <div className="app-layout">
+    <div className="app-layout" ref={layoutRef} style={{ "--guide-w": DEFAULT_W + "px" }}>
       {/* ── Main Content ── */}
       <main className="app-main">
         <div className="app-shell" style={{ padding: "24px 0" }}>
@@ -73,6 +134,11 @@ export function App() {
           </div>
         </div>
       </main>
+
+      {/* ── Resize Handle ── */}
+      <div className="app-resize" onMouseDown={onDown} onTouchStart={onDown}>
+        <div className="app-resize-line"></div>
+      </div>
 
       {/* ── Guide Sidebar ── */}
       <aside className="app-guide">

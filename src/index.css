@@ -1253,13 +1253,13 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
    App Layout — main + guide sidebar
    ══════════════════════════════════════════ */
 .app-layout {
+  --guide-w: 420px;
   display: flex;
   min-height: 100vh;
 }
 .app-main {
   flex: 1;
   min-width: 0;
-  /* center the 640px shell in the remaining space */
   display: flex;
   justify-content: center;
 }
@@ -1270,13 +1270,42 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   padding-right: 20px;
 }
 
+/* ── Resize Handle ── */
+.app-resize {
+  width: 6px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  position: relative;
+  z-index: 10;
+  transition: background 0.15s ease;
+}
+.app-resize:hover,
+.app-resize:active {
+  background: var(--an-primary-soft);
+}
+.app-resize-line {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 40px;
+  border-radius: 1px;
+  background: var(--an-faint);
+  transition: background 0.15s ease, height 0.15s ease;
+}
+.app-resize:hover .app-resize-line,
+.app-resize:active .app-resize-line {
+  background: var(--an-primary);
+  height: 56px;
+}
+
 /* ══════════════════════════════════════════
    Guide Sidebar
    ══════════════════════════════════════════ */
 .app-guide {
-  width: 420px;
+  width: var(--guide-w);
   flex-shrink: 0;
-  border-left: 1px solid var(--an-hairline-soft);
   height: 100vh;
   position: sticky;
   top: 0;
@@ -1284,7 +1313,7 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   background: var(--an-surface-2);
   display: flex;
   flex-direction: column;
-  transition: background 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
+  transition: background 0.3s var(--ease-out);
 }
 
 /* ── Guide shell ── */
@@ -1676,12 +1705,28 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
     padding-left: 16px;
     padding-right: 16px;
   }
-  .app-guide {
+  .app-resize {
     width: 100%;
+    height: 6px;
+    cursor: row-resize;
+  }
+  .app-resize-line {
+    width: 40px;
+    height: 2px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .app-resize:hover .app-resize-line,
+  .app-resize:active .app-resize-line {
+    width: 56px;
+    height: 2px;
+  }
+  .app-guide {
+    width: 100% !important;
     height: auto;
     max-height: 50vh;
     border-left: none;
-    border-top: 1px solid var(--an-hairline-soft);
     position: static;
   }
   .gs-nav {
