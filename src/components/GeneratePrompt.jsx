@@ -3,7 +3,7 @@ import {
   paperTitle, paperVenue, paperType, paperTypeCustom, citationFmt,
   version, discipline, researchDir, audience, audienceCustom,
   coreArg, researchQ, writingStyle, constraint, totalWords, sections,
-  showToast,
+  showToast, guideOpen,
 } from "../store.js";
 
 function getPaperType() {
@@ -130,6 +130,7 @@ export function GeneratePrompt() {
   const outputText = useSignal("");
   const showOutput = useSignal(false);
   const checks = buildCheckList();
+  const hasMissing = checks.some((c) => !c.ok);
 
   const handleGenerate = () => {
     const text = generatePrompt();
@@ -151,6 +152,15 @@ export function GeneratePrompt() {
             </span>
           </div>
         ))}
+        {hasMissing && (
+          <div className="guide-hint-link">
+            <i className="ti ti-help-circle" aria-hidden="true"></i>
+            <span>不确定怎么填？</span>
+            <button className="guide-hint-btn" onClick={() => { guideOpen.value = true; }}>
+              查看写作指南 <i className="ti ti-arrow-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Generate Button */}

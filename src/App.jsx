@@ -1,10 +1,12 @@
-import { currentTab, toggleTheme } from "./store.js";
+import { currentTab, toggleTheme, guideOpen } from "./store.js";
 import { TabBar } from "./components/TabBar.jsx";
 import { PaperParams } from "./components/PaperParams.jsx";
 import { OutlineManager } from "./components/OutlineManager.jsx";
 import { GeneratePrompt } from "./components/GeneratePrompt.jsx";
 import { PaperReview } from "./components/PaperReview.jsx";
 import { Humanizer } from "./components/Humanizer.jsx";
+import { Drawer } from "./components/Drawer.jsx";
+import { WritingGuide } from "./components/WritingGuide.jsx";
 
 const TAB_COMPONENTS = {
   params: PaperParams,
@@ -38,6 +40,14 @@ export function App() {
             <i className="ti ti-file" aria-hidden="true"></i>版本 B
           </span>
           <button
+            className="theme-toggle guide-trigger"
+            onClick={() => { guideOpen.value = true; }}
+            title="打开论文写作指南"
+            aria-label="打开写作指南"
+          >
+            <i className="ti ti-book-2" aria-hidden="true"></i>
+          </button>
+          <button
             className="theme-toggle"
             onClick={toggleTheme}
             title="切换深色/浅色模式"
@@ -61,9 +71,12 @@ export function App() {
 
       {/* Footer */}
       <div className="dev-footer">
-        <a href="guide.html" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginBottom: 12 }}>
-          <i className="ti ti-book-2" aria-hidden="true"></i> 论文写作完全指南
-        </a>
+        <button
+          className="guide-link-btn"
+          onClick={() => { guideOpen.value = true; }}
+        >
+          <i className="ti ti-book-2" aria-hidden="true"></i> 重新阅读指南
+        </button>
         <br />
         Designed & built by{" "}
         <span className="dev-name">tanzhijir-04</span>{" "}
@@ -71,6 +84,15 @@ export function App() {
         {" · "}
         <span style={{ color: "var(--an-muted-soft)" }}>知更·Paper</span>
       </div>
+
+      {/* Writing Guide Drawer */}
+      <Drawer
+        open={guideOpen.value}
+        onClose={() => { guideOpen.value = false; }}
+        title="论文写作完全指南"
+      >
+        <WritingGuide />
+      </Drawer>
     </div>
   );
 }

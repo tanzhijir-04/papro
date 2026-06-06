@@ -50,6 +50,11 @@ export const hzCurrentCat = signal("all");
 // ── Cross-tab Linkage (e.g. review→humanizer) ──
 export const pendingText = signal("");
 
+// ── Writing Guide ──
+export const guideOpen = signal(false);
+export const guideProgress = signal(0); // 0-7, current step
+export const guideSeen = signal(!!localStorage.getItem("guide_seen"));
+
 // ── Theme ──
 function initTheme() {
   const saved = localStorage.getItem("an-theme");
