@@ -61,6 +61,10 @@ export function App() {
 
       {/* Footer */}
       <div className="dev-footer">
+        <a href="guide.html" style={{ display: "inline-flex", alignItems: "center", gap: 4, marginBottom: 12 }}>
+          <i className="ti ti-book-2" aria-hidden="true"></i> 论文写作完全指南
+        </a>
+        <br />
         Designed & built by{" "}
         <span className="dev-name">tanzhijir-04</span>{" "}
         · <a href="https://github.com/tanzhijir-04/papro" target="_blank" rel="noopener noreferrer">GitHub</a>
