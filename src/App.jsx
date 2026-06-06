@@ -113,9 +113,6 @@ export function App() {
               </h2>
             </div>
             <div className="header-badges" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              <a href="https://ifdian.net/a/tanz666/plan" target="_blank" rel="noopener noreferrer" className="sponsor-btn">
-                <i className="ti ti-heart-filled" aria-hidden="true"></i>赞助
-              </a>
               <span className="badge badge-a">
                 <i className="ti ti-file-text" aria-hidden="true"></i>版本 A
               </span>
@@ -165,6 +162,17 @@ export function App() {
           <div className="app-resize-line"></div>
         </div>
       )}
+
+      {/* ── Floating Sponsor Card (left) ── */}
+      <a href="https://ifdian.net/a/tanz666/plan" target="_blank" rel="noopener noreferrer" className="sponsor-float">
+        <div className="sponsor-float-icon">
+          <i className="ti ti-heart-filled" aria-hidden="true"></i>
+        </div>
+        <div className="sponsor-float-text">
+          <span className="sponsor-float-title">赞助支持</span>
+          <span className="sponsor-float-desc">请作者喝杯咖啡 ☕</span>
+        </div>
+      </a>
 
       {/* ── Guide Sidebar ── */}
       <aside className="app-guide">
