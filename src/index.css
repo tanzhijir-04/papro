@@ -1170,10 +1170,6 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
 @media (max-width: 640px) {
   body { font-size: 14px; }
 
-  .app-shell {
-    padding: 16px 0 !important;
-  }
-
   h2 { font-size: 20px; }
 
   .tabs {
@@ -1258,17 +1254,20 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
    ══════════════════════════════════════════ */
 .app-layout {
   display: flex;
-  gap: 0;
-  max-width: 1120px;
-  margin: 0 auto;
   min-height: 100vh;
 }
 .app-main {
   flex: 1;
   min-width: 0;
+  /* center the 640px shell in the remaining space */
+  display: flex;
+  justify-content: center;
+}
+.app-main > .app-shell {
   max-width: 640px;
-  margin: 0 auto;
-  padding: 0 20px;
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 /* ══════════════════════════════════════════
@@ -1670,8 +1669,12 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
     flex-direction: column;
   }
   .app-main {
+    display: block;
+  }
+  .app-main > .app-shell {
     max-width: 100%;
-    padding: 0 16px;
+    padding-left: 16px;
+    padding-right: 16px;
   }
   .app-guide {
     width: 100%;
