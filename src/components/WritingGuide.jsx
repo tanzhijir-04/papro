@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from "preact/hooks";
-import { guideProgress, guideSeen } from "../store.js";
+import { guideProgress } from "../store.js";
 
 const STEPS = [
   { id: "prep", num: 1, title: "准备工作" },
@@ -20,14 +20,6 @@ function scrollToSection(id) {
 export function WritingGuide() {
   const contentRef = useRef(null);
   const currentStep = guideProgress.value;
-
-  // Mark as seen on mount
-  useEffect(() => {
-    if (!guideSeen.value) {
-      guideSeen.value = true;
-      localStorage.setItem("guide_seen", "1");
-    }
-  }, []);
 
   // Track scroll position to update progress
   useEffect(() => {

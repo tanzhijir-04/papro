@@ -1171,8 +1171,7 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   body { font-size: 14px; }
 
   .app-shell {
-    padding: 16px 14px !important;
-    max-width: 100% !important;
+    padding: 16px 0 !important;
   }
 
   h2 { font-size: 20px; }
@@ -1255,156 +1254,64 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
 }
 
 /* ══════════════════════════════════════════
-   Drawer
+   App Layout — sidebar guide
    ══════════════════════════════════════════ */
-.drawer-root {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  pointer-events: none;
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
 }
-.drawer-root.open {
-  pointer-events: auto;
+.app-main {
+  flex: 1;
+  min-width: 0;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
-.drawer-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0);
-  transition: background 0.35s var(--ease-out);
-  z-index: 0;
-}
-.drawer-root.open .drawer-overlay {
-  background: rgba(0, 0, 0, 0.45);
-}
-.drawer-panel {
-  position: absolute;
+.app-guide-sidebar {
+  width: 380px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--an-hairline-soft);
+  background: var(--an-surface-2);
+  height: 100vh;
+  position: sticky;
   top: 0;
-  right: 0;
-  width: 520px;
-  max-width: 100%;
-  height: 100%;
-  background: var(--an-surface-1);
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
-  transform: translateX(100%);
-  transition: transform 0.4s var(--ease-out);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  z-index: 1;
-}
-.drawer-root.open .drawer-panel {
-  transform: translateX(0);
-}
-.drawer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--an-hairline-soft);
-  flex-shrink: 0;
-}
-.drawer-title {
-  font-family: 'Noto Sans SC', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--an-ink);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-}
-.drawer-title i {
-  color: var(--an-primary);
-  font-size: 18px;
-}
-.drawer-close {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--r-sm);
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: var(--an-muted);
-  transition: all 0.2s var(--ease-out);
-}
-.drawer-close:hover {
-  background: var(--an-surface-2);
-  color: var(--an-ink);
-}
-.drawer-body {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.drawer-body::-webkit-scrollbar { width: 4px; }
-.drawer-body::-webkit-scrollbar-track { background: transparent; }
-.drawer-body::-webkit-scrollbar-thumb { background: var(--an-faint); border-radius: 2px; }
-
-/* ── Guide trigger button ── */
-.guide-trigger {
-  color: var(--an-primary) !important;
-  border-color: var(--an-primary-soft) !important;
-  background: var(--an-primary-soft) !important;
-}
-.guide-trigger:hover {
-  background: var(--an-primary) !important;
-  color: #fff !important;
-}
-
-/* ── Footer guide link ── */
-.guide-link-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: 'Noto Sans SC', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--an-primary);
-  padding: 0;
-  margin-bottom: 12px;
-  transition: color 0.15s ease;
-}
-.guide-link-btn:hover {
-  color: var(--an-primary-hover);
-  text-decoration: underline;
+  transition: background 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
 }
 
 /* ══════════════════════════════════════════
-   Writing Guide
+   Writing Guide (sidebar)
    ══════════════════════════════════════════ */
 .guide-layout {
   display: flex;
   height: 100%;
+  min-height: 0;
 }
 
 /* ── Side Nav ── */
 .guide-nav {
-  width: 160px;
+  width: 140px;
   flex-shrink: 0;
   border-right: 1px solid var(--an-hairline-soft);
-  padding: 16px 0;
+  padding: 12px 0;
   overflow-y: auto;
-  position: sticky;
-  top: 0;
-  height: 100%;
+  background: var(--an-surface-1);
 }
 .guide-nav-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  padding: 8px 16px;
+  padding: 7px 12px;
   border: none;
   background: transparent;
   cursor: pointer;
   font-family: 'Noto Sans SC', sans-serif;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--an-muted);
   text-align: left;
   transition: all 0.2s var(--ease-out);
@@ -1421,15 +1328,15 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   border-left-color: var(--an-primary);
 }
 .guide-nav-num {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   background: var(--an-surface-3);
   color: var(--an-muted);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   flex-shrink: 0;
   transition: all 0.2s var(--ease-out);
@@ -1448,31 +1355,34 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
 .guide-content {
   flex: 1;
   min-width: 0;
-  padding: 24px;
+  padding: 16px;
   overflow-y: auto;
   scroll-behavior: smooth;
 }
+.guide-content::-webkit-scrollbar { width: 4px; }
+.guide-content::-webkit-scrollbar-track { background: transparent; }
+.guide-content::-webkit-scrollbar-thumb { background: var(--an-faint); border-radius: 2px; }
 
 /* ── Guide Header ── */
 .guide-header {
-  text-align: center;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
+  text-align: left;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--an-hairline-soft);
 }
 .guide-header-title {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 6px;
-}
-.guide-header-sub {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--an-primary);
   margin-bottom: 4px;
 }
-.guide-header-desc {
+.guide-header-sub {
   font-size: 13px;
+  font-weight: 500;
+  color: var(--an-primary);
+  margin-bottom: 2px;
+}
+.guide-header-desc {
+  font-size: 12px;
   color: var(--an-muted);
 }
 
@@ -1752,44 +1662,24 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   font-variant-numeric: tabular-nums;
 }
 
-/* ── Guide Hint in GeneratePrompt ── */
-.guide-hint-link {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 0 0;
-  font-size: 12px;
-  color: var(--an-muted);
-}
-.guide-hint-link i:first-child {
-  color: var(--an-primary);
-  font-size: 14px;
-}
-.guide-hint-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: 'Noto Sans SC', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--an-primary);
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 0;
-  transition: color 0.15s ease;
-}
-.guide-hint-btn:hover {
-  color: var(--an-primary-hover);
-  text-decoration: underline;
-}
-
 /* ══════════════════════════════════════════
    Guide Responsive
    ══════════════════════════════════════════ */
-@media (max-width: 640px) {
-  .drawer-panel {
+@media (max-width: 900px) {
+  .app-layout {
+    flex-direction: column;
+  }
+  .app-main {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+  .app-guide-sidebar {
     width: 100%;
+    height: auto;
+    max-height: 60vh;
+    border-left: none;
+    border-top: 1px solid var(--an-hairline-soft);
+    position: static;
   }
   .guide-layout {
     flex-direction: column;
@@ -1808,7 +1698,6 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
     scrollbar-width: none;
     position: sticky;
     top: 0;
-    background: var(--an-surface-1);
     z-index: 2;
   }
   .guide-nav::-webkit-scrollbar { display: none; }
