@@ -51,6 +51,7 @@ export const hzCurrentCat = signal("all");
 export const pendingText = signal("");
 
 // ── Writing Guide ──
+export const guideOpen = signal(true); // sidebar visible
 export const guideProgress = signal(0); // 0-7, current step (scroll tracking)
 
 // ── Theme ──

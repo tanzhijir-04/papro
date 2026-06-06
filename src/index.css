@@ -1253,7 +1253,7 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
    App Layout — main + guide sidebar
    ══════════════════════════════════════════ */
 .app-layout {
-  --guide-w: 420px;
+  --guide-w: 56px;
   display: flex;
   min-height: 100vh;
 }
@@ -1313,7 +1313,72 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   background: var(--an-surface-2);
   display: flex;
   flex-direction: column;
-  transition: background 0.3s var(--ease-out);
+  transition: width 0.3s var(--ease-out), background 0.3s var(--ease-out);
+}
+
+/* ── Collapsed state ── */
+.guide-closed .app-guide {
+  width: 56px;
+}
+.gs-collapsed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 14px;
+  gap: 8px;
+}
+.gs-expand-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  border: none;
+  background: var(--an-primary-soft);
+  color: var(--an-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.2s var(--ease-out);
+}
+.gs-expand-btn:hover {
+  background: var(--an-primary);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+/* ── Floating toggle button ── */
+.guide-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--an-hairline);
+  background: var(--an-surface-1);
+  color: var(--an-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  gap: 2px;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+  transition: all 0.25s var(--ease-out);
+}
+.guide-toggle:hover {
+  background: var(--an-primary);
+  color: #fff;
+  border-color: var(--an-primary);
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(194, 105, 79, 0.35);
+}
+.guide-toggle .ti-chevron-right,
+.guide-toggle .ti-chevron-left {
+  font-size: 11px;
+  opacity: 0.7;
 }
 
 /* ── Guide shell ── */
@@ -1525,7 +1590,8 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   transition: border-color 0.15s ease;
 }
 .gs-tool:hover { border-color: var(--an-primary); }
-.gs-tool i { font-size: 14px; flex-shrink: 0; }
+.gs-tool i,
+.gs-tool .gs-tool-svg { font-size: 14px; flex-shrink: 0; }
 .gs-tool strong {
   font-size: 12px;
   color: var(--an-ink);
@@ -1713,9 +1779,6 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
   .app-resize-line {
     width: 40px;
     height: 2px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
   .app-resize:hover .app-resize-line,
   .app-resize:active .app-resize-line {
@@ -1729,8 +1792,18 @@ html:not(.dark) .theme-toggle .icon-moon { display: inline; }
     border-left: none;
     position: static;
   }
+  .guide-closed .app-guide {
+    width: 100% !important;
+    height: 56px;
+  }
   .gs-nav {
     flex-wrap: nowrap;
+  }
+  .guide-toggle {
+    bottom: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
   }
 }
 

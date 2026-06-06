@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from "preact/hooks";
-import { currentTab, toggleTheme } from "./store.js";
+import { currentTab, toggleTheme, guideOpen } from "./store.js";
 import { TabBar } from "./components/TabBar.jsx";
 import { PaperParams } from "./components/PaperParams.jsx";
 import { OutlineManager } from "./components/OutlineManager.jsx";
@@ -18,23 +18,24 @@ const TAB_COMPONENTS = {
 
 const MIN_W = 320;
 const MAX_W = 700;
-const DEFAULT_W = 420;
+const EXPANDED_W = 420;
+const COLLAPSED_W = 56;
 
-function initGuideW() {
+function readGuideW() {
   try {
     const v = parseInt(localStorage.getItem("guide-w"), 10);
-    return v >= MIN_W && v <= MAX_W ? v : DEFAULT_W;
-  } catch { return DEFAULT_W; }
+    return v >= MIN_W && v <= MAX_W ? v : EXPANDED_W;
+  } catch { return EXPANDED_W; }
 }
 
 export function App() {
   const tab = currentTab.value;
   const TabComponent = TAB_COMPONENTS[tab];
+  const isOpen = guideOpen.value;
   const layoutRef = useRef(null);
   const dragging = useRef(false);
-  const guideW = useRef(initGuideW());
+  const guideW = useRef(isOpen ? readGuideW() : COLLAPSED_W);
 
-  // Apply width to CSS variable
   const applyW = useCallback((w) => {
     guideW.current = w;
     if (layoutRef.current) {
@@ -42,11 +43,23 @@ export function App() {
     }
   }, []);
 
-  // Initialize on mount
   useEffect(() => { applyW(guideW.current); }, []);
 
-  // Drag handlers
+  // Toggle collapse/expand
+  const toggleGuide = useCallback(() => {
+    const next = !guideOpen.value;
+    guideOpen.value = next;
+    if (next) {
+      const w = readGuideW();
+      applyW(w);
+    } else {
+      applyW(COLLAPSED_W);
+    }
+  }, [applyW]);
+
+  // Drag handler
   const onDown = useCallback((e) => {
+    if (!guideOpen.value) return;
     e.preventDefault();
     dragging.current = true;
     document.body.style.cursor = "col-resize";
@@ -58,7 +71,7 @@ export function App() {
     const onMove = (ev) => {
       if (!dragging.current) return;
       const cx = ev.clientX ?? ev.touches?.[0]?.clientX ?? 0;
-      const delta = startX - cx; // dragging left = wider guide
+      const delta = startX - cx;
       const newW = Math.round(Math.min(MAX_W, Math.max(MIN_W, startW + delta)));
       applyW(newW);
     };
@@ -78,10 +91,14 @@ export function App() {
     document.addEventListener("mouseup", onUp);
     document.addEventListener("touchmove", onMove, { passive: false });
     document.addEventListener("touchend", onUp);
-  }, [applyW]);
+  }, [applyW, isOpen]);
 
   return (
-    <div className="app-layout" ref={layoutRef} style={{ "--guide-w": DEFAULT_W + "px" }}>
+    <div
+      className={`app-layout${isOpen ? "" : " guide-closed"}`}
+      ref={layoutRef}
+      style={{ "--guide-w": (isOpen ? EXPANDED_W : COLLAPSED_W) + "px" }}
+    >
       {/* ── Main Content ── */}
       <main className="app-main">
         <div className="app-shell" style={{ padding: "24px 0" }}>
@@ -136,14 +153,35 @@ export function App() {
       </main>
 
       {/* ── Resize Handle ── */}
-      <div className="app-resize" onMouseDown={onDown} onTouchStart={onDown}>
-        <div className="app-resize-line"></div>
-      </div>
+      {isOpen && (
+        <div className="app-resize" onMouseDown={onDown} onTouchStart={onDown}>
+          <div className="app-resize-line"></div>
+        </div>
+      )}
 
       {/* ── Guide Sidebar ── */}
       <aside className="app-guide">
-        <WritingGuide />
+        {isOpen ? (
+          <WritingGuide />
+        ) : (
+          <div className="gs-collapsed">
+            <button className="gs-expand-btn" onClick={toggleGuide} title="展开写作指南" aria-label="展开写作指南">
+              <i className="ti ti-book-2" aria-hidden="true"></i>
+            </button>
+          </div>
+        )}
       </aside>
+
+      {/* ── Floating toggle (always visible) ── */}
+      <button
+        className={`guide-toggle${isOpen ? " open" : ""}`}
+        onClick={toggleGuide}
+        title={isOpen ? "收起指南" : "展开指南"}
+        aria-label={isOpen ? "收起指南" : "展开指南"}
+      >
+        <i className={`ti ti-book-2`} aria-hidden="true"></i>
+        <i className={`ti ti-chevron-${isOpen ? "right" : "left"}`} aria-hidden="true"></i>
+      </button>
     </div>
   );
 }
