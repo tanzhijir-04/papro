@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "preact/hooks";
+import { useEffect, useRef } from "preact/hooks";
 import { guideProgress } from "../store.js";
 
 const STEPS = [
@@ -31,7 +31,7 @@ export function WritingGuide() {
       sections.forEach((sec) => {
         const rect = sec.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
-        if (rect.top - containerRect.top <= 80) {
+        if (rect.top - containerRect.top <= 100) {
           closest = parseInt(sec.dataset.guideStep, 10);
         }
       });
@@ -45,46 +45,39 @@ export function WritingGuide() {
 
   const goNext = () => {
     if (currentStep < STEPS.length - 1) {
-      const next = STEPS[currentStep + 1];
-      scrollToSection(next.id);
+      scrollToSection(STEPS[currentStep + 1].id);
     }
   };
   const goPrev = () => {
     if (currentStep > 0) {
-      const prev = STEPS[currentStep - 1];
-      scrollToSection(prev.id);
+      scrollToSection(STEPS[currentStep - 1].id);
     }
   };
 
   return (
-    <div className="guide-layout">
-      {/* Side nav (desktop) / Top nav (mobile) */}
-      <nav className="guide-nav">
+    <div className="guide-wrap">
+      {/* Horizontal pill nav */}
+      <nav className="guide-pills">
         {STEPS.map((s, i) => (
           <button
             key={s.id}
-            className={`guide-nav-item${i === currentStep ? " active" : ""}`}
+            className={`guide-pill${i === currentStep ? " active" : ""}`}
             onClick={() => scrollToSection(s.id)}
           >
-            <span className="guide-nav-num">{s.num}</span>
-            <span className="guide-nav-label">{s.title}</span>
+            <span className="guide-pill-num">{s.num}</span>
+            {s.title}
           </button>
         ))}
       </nav>
 
       {/* Content */}
-      <div className="guide-content" ref={contentRef}>
-        {/* ── Header ── */}
-        <header className="guide-header">
-          <h2 className="guide-header-title">论文写作完全指南</h2>
-          <p className="guide-header-sub">从零开始，用 AI 工具写出高质量学术论文</p>
-          <p className="guide-header-desc">适用于课程论文、毕业论文、期刊投稿等各类中文学术写作场景</p>
-        </header>
-
+      <div className="guide-body" ref={contentRef}>
         {/* ═══ Step 1 ═══ */}
         <section className="guide-step" data-guide-step="0" id="guide-step-prep">
-          <div className="guide-step-num">1</div>
-          <h3 className="guide-step-title">准备工作</h3>
+          <div className="guide-step-head">
+            <div className="guide-step-num">1</div>
+            <h3 className="guide-step-title">准备工作</h3>
+          </div>
 
           <div className="sub-card">
             <h3><i className="ti ti-package" aria-hidden="true"></i> 1.1 你需要准备什么</h3>
@@ -92,46 +85,48 @@ export function WritingGuide() {
               <li><strong>一台能上网的电脑</strong>（Windows 或 Mac 都行）</li>
               <li><strong>一个 AI 聊天工具的账号</strong>（推荐以下几个，选一个就行）：</li>
             </ul>
-            <a href="https://chat.openai.com" target="_blank" rel="noopener noreferrer" className="guide-link-card">
-              <div className="guide-link-icon"><i className="ti ti-brand-chatgpt"></i></div>
-              <div className="guide-link-info">
-                <div className="guide-link-name">ChatGPT</div>
-                <div className="guide-link-url">chat.openai.com</div>
-                <div className="guide-link-desc">最主流，需要注册，免费版够用</div>
-              </div>
-            </a>
-            <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="guide-link-card">
-              <div className="guide-link-icon" style={{ background: "var(--an-teal-soft)", color: "var(--an-teal)" }}><i className="ti ti-robot"></i></div>
-              <div className="guide-link-info">
-                <div className="guide-link-name">Claude</div>
-                <div className="guide-link-url">claude.ai</div>
-                <div className="guide-link-desc">写长文质量高，推荐</div>
-              </div>
-            </a>
-            <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="guide-link-card">
-              <div className="guide-link-icon" style={{ background: "rgba(124,109,235,0.1)", color: "#7c6deb" }}><i className="ti ti-sparkles"></i></div>
-              <div className="guide-link-info">
-                <div className="guide-link-name">Gemini</div>
-                <div className="guide-link-url">gemini.google.com</div>
-                <div className="guide-link-desc">谷歌出品</div>
-              </div>
-            </a>
-            <a href="https://kimi.moonshot.cn" target="_blank" rel="noopener noreferrer" className="guide-link-card">
-              <div className="guide-link-icon" style={{ background: "rgba(200,120,200,0.1)", color: "#a060a0" }}><i className="ti ti-moon"></i></div>
-              <div className="guide-link-info">
-                <div className="guide-link-name">Kimi</div>
-                <div className="guide-link-url">kimi.moonshot.cn</div>
-                <div className="guide-link-desc">国内直接用，推荐新手</div>
-              </div>
-            </a>
-            <a href="https://chat.deepseek.com" target="_blank" rel="noopener noreferrer" className="guide-link-card">
-              <div className="guide-link-icon" style={{ background: "rgba(60,130,246,0.1)", color: "#3c82f6" }}><i className="ti ti-device-desktop"></i></div>
-              <div className="guide-link-info">
-                <div className="guide-link-name">DeepSeek</div>
-                <div className="guide-link-url">chat.deepseek.com</div>
-                <div className="guide-link-desc">国内直接用</div>
-              </div>
-            </a>
+            <div className="guide-tool-grid">
+              <a href="https://chat.openai.com" target="_blank" rel="noopener noreferrer" className="guide-link-card">
+                <div className="guide-link-icon"><i className="ti ti-brand-chatgpt"></i></div>
+                <div className="guide-link-info">
+                  <div className="guide-link-name">ChatGPT</div>
+                  <div className="guide-link-url">chat.openai.com</div>
+                  <div className="guide-link-desc">最主流，需要注册，免费版够用</div>
+                </div>
+              </a>
+              <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" className="guide-link-card">
+                <div className="guide-link-icon" style={{ background: "var(--an-teal-soft)", color: "var(--an-teal)" }}><i className="ti ti-robot"></i></div>
+                <div className="guide-link-info">
+                  <div className="guide-link-name">Claude</div>
+                  <div className="guide-link-url">claude.ai</div>
+                  <div className="guide-link-desc">写长文质量高，推荐</div>
+                </div>
+              </a>
+              <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" className="guide-link-card">
+                <div className="guide-link-icon" style={{ background: "rgba(124,109,235,0.1)", color: "#7c6deb" }}><i className="ti ti-sparkles"></i></div>
+                <div className="guide-link-info">
+                  <div className="guide-link-name">Gemini</div>
+                  <div className="guide-link-url">gemini.google.com</div>
+                  <div className="guide-link-desc">谷歌出品</div>
+                </div>
+              </a>
+              <a href="https://kimi.moonshot.cn" target="_blank" rel="noopener noreferrer" className="guide-link-card">
+                <div className="guide-link-icon" style={{ background: "rgba(200,120,200,0.1)", color: "#a060a0" }}><i className="ti ti-moon"></i></div>
+                <div className="guide-link-info">
+                  <div className="guide-link-name">Kimi</div>
+                  <div className="guide-link-url">kimi.moonshot.cn</div>
+                  <div className="guide-link-desc">国内直接用，推荐新手</div>
+                </div>
+              </a>
+              <a href="https://chat.deepseek.com" target="_blank" rel="noopener noreferrer" className="guide-link-card">
+                <div className="guide-link-icon" style={{ background: "rgba(60,130,246,0.1)", color: "#3c82f6" }}><i className="ti ti-device-desktop"></i></div>
+                <div className="guide-link-info">
+                  <div className="guide-link-name">DeepSeek</div>
+                  <div className="guide-link-url">chat.deepseek.com</div>
+                  <div className="guide-link-desc">国内直接用</div>
+                </div>
+              </a>
+            </div>
             <ul style={{ marginTop: 12 }}>
               <li><strong>知更·Paper 工具</strong>（就是你现在打开的这个网页）</li>
             </ul>
@@ -166,8 +161,10 @@ export function WritingGuide() {
 
         {/* ═══ Step 2 ═══ */}
         <section className="guide-step" data-guide-step="1" id="guide-step-topic">
-          <div className="guide-step-num">2</div>
-          <h3 className="guide-step-title">选题与文献收集</h3>
+          <div className="guide-step-head">
+            <div className="guide-step-num">2</div>
+            <h3 className="guide-step-title">选题与文献收集</h3>
+          </div>
 
           <div className="sub-card">
             <h3><i className="ti ti-bulb" aria-hidden="true"></i> 2.1 怎么确定选题</h3>
@@ -217,8 +214,10 @@ export function WritingGuide() {
 
         {/* ═══ Step 3 ═══ */}
         <section className="guide-step" data-guide-step="2" id="guide-step-params">
-          <div className="guide-step-num">3</div>
-          <h3 className="guide-step-title">配置论文参数</h3>
+          <div className="guide-step-head">
+            <div className="guide-step-num">3</div>
+            <h3 className="guide-step-title">配置论文参数</h3>
+          </div>
 
           <div className="sub-card">
             <h3><i className="ti ti-settings" aria-hidden="true"></i> 3.1 打开知更·Paper</h3>
@@ -275,8 +274,10 @@ export function WritingGuide() {
 
         {/* ═══ Step 4 ═══ */}
         <section className="guide-step" data-guide-step="3" id="guide-step-outline">
-          <div className="guide-step-num">4</div>
-          <h3 className="guide-step-title">创建大纲</h3>
+          <div className="guide-step-head">
+            <div className="guide-step-num">4</div>
+            <h3 className="guide-step-title">创建大纲</h3>
+          </div>
 
           <div className="sub-card">
             <h3><i className="ti ti-list" aria-hidden="true"></i> 4.1 理解大纲管理页面</h3>
@@ -291,12 +292,24 @@ export function WritingGuide() {
           <div className="sub-card">
             <h3><i className="ti ti-arrows-maximize" aria-hidden="true"></i> 4.2 调整总字数</h3>
             <p>拖动顶部的滑块设置论文总字数。常见字数参考：</p>
-            <ul>
-              <li>课程论文：<strong>3000-5000 字</strong></li>
-              <li>本科毕业论文：<strong>8000-15000 字</strong></li>
-              <li>硕士学位论文：<strong>30000-50000 字</strong></li>
-              <li>期刊论文：<strong>5000-8000 字</strong></li>
-            </ul>
+            <div className="guide-ref-grid">
+              <div className="guide-ref-item">
+                <span className="guide-ref-label">课程论文</span>
+                <span className="guide-ref-val">3,000 – 5,000 字</span>
+              </div>
+              <div className="guide-ref-item">
+                <span className="guide-ref-label">本科毕业论文</span>
+                <span className="guide-ref-val">8,000 – 15,000 字</span>
+              </div>
+              <div className="guide-ref-item">
+                <span className="guide-ref-label">硕士学位论文</span>
+                <span className="guide-ref-val">30,000 – 50,000 字</span>
+              </div>
+              <div className="guide-ref-item">
+                <span className="guide-ref-label">期刊论文</span>
+                <span className="guide-ref-val">5,000 – 8,000 字</span>
+              </div>
+            </div>
             <p>调整后，各章节的字数会按比例自动分配。</p>
           </div>
 
@@ -312,19 +325,29 @@ export function WritingGuide() {
 
           <div className="sub-card">
             <h3><i className="ti ti-layout-grid" aria-hidden="true"></i> 4.4 常见论文结构参考</h3>
-            <p><strong>课程论文：</strong></p>
-            <div className="code-block">摘要 → 引言 → 正文（2-3 节）→ 结论 → 参考文献</div>
-            <p><strong>本科毕业论文：</strong></p>
-            <div className="code-block">摘要 → 引言 → 文献综述 → 研究方法 → 结果与分析 → 讨论 → 结论</div>
-            <p><strong>期刊论文：</strong></p>
-            <div className="code-block">Abstract → Introduction → Method → Results → Discussion → Conclusion</div>
+            <div className="guide-structure-grid">
+              <div className="guide-structure-item">
+                <div className="guide-structure-label">课程论文</div>
+                <div className="code-block">摘要 → 引言 → 正文（2-3 节）→ 结论 → 参考文献</div>
+              </div>
+              <div className="guide-structure-item">
+                <div className="guide-structure-label">本科毕业论文</div>
+                <div className="code-block">摘要 → 引言 → 文献综述 → 研究方法 → 结果与分析 → 讨论 → 结论</div>
+              </div>
+              <div className="guide-structure-item">
+                <div className="guide-structure-label">期刊论文</div>
+                <div className="code-block">Abstract → Introduction → Method → Results → Discussion → Conclusion</div>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* ═══ Step 5 ═══ */}
         <section className="guide-step" data-guide-step="4" id="guide-step-generate">
-          <div className="guide-step-num">5</div>
-          <h3 className="guide-step-title">生成并使用写作提示词</h3>
+          <div className="guide-step-head">
+            <div className="guide-step-num">5</div>
+            <h3 className="guide-step-title">生成并使用写作提示词</h3>
+          </div>
 
           <div className="sub-card">
             <h3><i className="ti ti-sparkles" aria-hidden="true"></i> 5.1 生成提示词</h3>
@@ -394,8 +417,10 @@ export function WritingGuide() {
 
         {/* ═══ Step 6 ═══ */}
         <section className="guide-step" data-guide-step="5" id="guide-step-review">
-          <div className="guide-step-num">6</div>
-          <h3 className="guide-step-title">审阅与修改</h3>
+          <div className="guide-step-head">
+            <div className="guide-step-num">6</div>
+            <h3 className="guide-step-title">审阅与修改</h3>
+          </div>
 
           <div className="sub-card">
             <h3><i className="ti ti-search" aria-hidden="true"></i> 6.1 用知更·Paper 审阅</h3>
@@ -435,8 +460,10 @@ export function WritingGuide() {
 
         {/* ═══ Step 7 ═══ */}
         <section className="guide-step" data-guide-step="6" id="guide-step-humanize">
-          <div className="guide-step-num">7</div>
-          <h3 className="guide-step-title">去 AI 味（写作优化）</h3>
+          <div className="guide-step-head">
+            <div className="guide-step-num">7</div>
+            <h3 className="guide-step-title">去 AI 味（写作优化）</h3>
+          </div>
 
           <div className="sub-card">
             <h3><i className="ti ti-shield-check" aria-hidden="true"></i> 7.1 为什么要去 AI 味</h3>
@@ -477,50 +504,46 @@ export function WritingGuide() {
 
         {/* ═══ FAQ ═══ */}
         <section className="guide-step guide-step-faq" data-guide-step="7" id="guide-step-faq">
-          <div className="guide-step-num" style={{ background: "var(--an-teal)" }}>?</div>
-          <h3 className="guide-step-title">常见问题 FAQ</h3>
+          <div className="guide-step-head">
+            <div className="guide-step-num" style={{ background: "var(--an-teal)" }}>?</div>
+            <h3 className="guide-step-title">常见问题 FAQ</h3>
+          </div>
 
           <div className="sub-card">
-            <div className="faq-item">
-              <div className="faq-q">AI 写的论文会被查重吗？</div>
-              <div className="faq-a">会。AI 生成的内容可能与其他 AI 生成的内容重复。建议在 AI 写完后，<strong>用自己的话改写至少 30%</strong> 的内容。</div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-q">AI 推荐的参考文献是真的吗？</div>
-              <div className="faq-a">不一定。AI 经常编造不存在的文献。<strong>每一篇文献都要去知网或 Google Scholar 核实。</strong></div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-q">免费版的 AI 工具够用吗？</div>
-              <div className="faq-a">对于课程论文和一般毕业论文，免费版完全够用。如果论文很长（2 万字以上），可能需要分多次对话完成。</div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-q">提示词可以反复使用吗？</div>
-              <div className="faq-a">可以。同一个提示词发给不同的 AI 工具（比如先发给 ChatGPT，再发给 Claude），对比结果，选最好的。</div>
-            </div>
-            <div className="faq-item">
-              <div className="faq-q">知更·Paper 需要付费吗？</div>
-              <div className="faq-a">不需要。知更·Paper 是免费工具，所有功能本地运行，不需要联网。</div>
+            <div className="faq-grid">
+              <div className="faq-item">
+                <div className="faq-q">AI 写的论文会被查重吗？</div>
+                <div className="faq-a">会。AI 生成的内容可能与其他 AI 生成的内容重复。建议在 AI 写完后，<strong>用自己的话改写至少 30%</strong> 的内容。</div>
+              </div>
+              <div className="faq-item">
+                <div className="faq-q">AI 推荐的参考文献是真的吗？</div>
+                <div className="faq-a">不一定。AI 经常编造不存在的文献。<strong>每一篇文献都要去知网或 Google Scholar 核实。</strong></div>
+              </div>
+              <div className="faq-item">
+                <div className="faq-q">免费版的 AI 工具够用吗？</div>
+                <div className="faq-a">对于课程论文和一般毕业论文，免费版完全够用。如果论文很长（2 万字以上），可能需要分多次对话完成。</div>
+              </div>
+              <div className="faq-item">
+                <div className="faq-q">提示词可以反复使用吗？</div>
+                <div className="faq-a">可以。同一个提示词发给不同的 AI 工具（比如先发给 ChatGPT，再发给 Claude），对比结果，选最好的。</div>
+              </div>
+              <div className="faq-item">
+                <div className="faq-q">知更·Paper 需要付费吗？</div>
+                <div className="faq-a">不需要。知更·Paper 是免费工具，所有功能本地运行，不需要联网。</div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* ── Nav Buttons ── */}
         <div className="guide-bottom-nav">
-          <button
-            className="btn guide-nav-btn"
-            onClick={goPrev}
-            disabled={currentStep <= 0}
-          >
+          <button className="btn guide-nav-btn" onClick={goPrev} disabled={currentStep <= 0}>
             <i className="ti ti-chevron-left" aria-hidden="true"></i> 上一步
           </button>
           <span className="guide-progress-text">
             {currentStep + 1} / {STEPS.length}
           </span>
-          <button
-            className="btn guide-nav-btn"
-            onClick={goNext}
-            disabled={currentStep >= STEPS.length - 1}
-          >
+          <button className="btn guide-nav-btn" onClick={goNext} disabled={currentStep >= STEPS.length - 1}>
             下一步 <i className="ti ti-chevron-right" aria-hidden="true"></i>
           </button>
         </div>
