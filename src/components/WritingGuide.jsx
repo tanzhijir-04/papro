@@ -86,6 +86,14 @@ export function WritingGuide() {
                 <svg className="gs-tool-svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg>
                 <div><strong>Claude</strong><span>写长文质量高</span></div>
               </a>
+              <a href="https://www.doubao.com" target="_blank" rel="noopener noreferrer" className="gs-tool">
+                <svg className="gs-tool-svg" viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zm0 4.2a3.6 3.6 0 1 1 0 7.2 3.6 3.6 0 0 1 0-7.2zM5.4 16.2c0-2.4 3-3.6 6.6-3.6s6.6 1.2 6.6 3.6v1.2c0 .6-.6 1.2-1.2 1.2H6.6c-.6 0-1.2-.6-1.2-1.2v-1.2z"/></svg>
+                <div><strong>豆包</strong><span>字节跳动出品</span></div>
+              </a>
+              <a href="https://tongyi.aliyun.com/qianwen" target="_blank" rel="noopener noreferrer" className="gs-tool">
+                <svg className="gs-tool-svg" viewBox="0 0 32 32" width="14" height="14" fill="currentColor"><path d="M7.6 8.04l2.42 4.19h17.16l2.2-3.81H11.78l2.2-3.81-2.2-3.73-4.18 7.16zM2.96 8.38l4.4.03 2.2 3.81 6.38 11.05-2.42 3.81L5.16 27.43l-2.2-3.81 6.8-1.23-8.8-14.01zm14.7 4.19l-8.58 14.86 2.2 3.81 8.8-15.23 4.84 3.24-3.18 8.77h4.4l4.18-7.24-1.98-3.43-10.68-.78z"/></svg>
+                <div><strong>通义千问</strong><span>阿里云出品</span></div>
+              </a>
             </div>
           </div>
           <div className="gs-card">
