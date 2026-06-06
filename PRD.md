@@ -1,10 +1,10 @@
-# PRD：papro — 提示词工具集
+# PRD：知更·Paper — 提示词工具集
 
-> 版本：v2.0 | 日期：2026-05-12 | 基于 papro 项目演进
+> 版本：v2.0 | 日期：2026-05-12 | 基于知更·Paper 项目演进
 
 ## 1. 背景与动机
 
-papro 起初是一个学术论文提示词生成工具（`prompt_manager.html`），聚焦"论文"这一单一场景。随着需求扩展，项目演进为一个**提示词工具集**，包含三个独立应用，覆盖学术写作、通用写作和去 AI 味三大场景。
+知更·Paper 起初是一个学术论文提示词生成工具（`prompt_manager.html`），聚焦"论文"这一单一场景。随着需求扩展，项目演进为一个**提示词工具集**，包含三个独立应用，覆盖学术写作、通用写作和去 AI 味三大场景。
 
 核心用户痛点：**每次都要从头写提示词**。好的提示词应该像模板一样可复用、可组合、可迭代。
 
@@ -12,7 +12,7 @@ papro 起初是一个学术论文提示词生成工具（`prompt_manager.html`�
 
 | 应用 | 文件 | 设计系统 | 定位 |
 |------|------|----------|------|
-| 学术论文提示词管理器 | `prompt_manager.html` | Anthropic Claude | 学术论文 + 写作优化（含 Humanizer） |
+| 知更·Paper | `prompt_manager.html` | Anthropic Claude | 学术论文 + 写作优化（含 Humanizer） |
 | 写作管理器 | `writer.html` | BMW M | 通用写作，15+ 模板 |
 | 去 AI 味 | `humanizer.html` | Apple | 专注人性化处理 |
 
@@ -224,7 +224,7 @@ papro 起初是一个学术论文提示词生成工具（`prompt_manager.html`�
 ### 5.3 文件结构
 
 ```
-papro/
+知更Paper/
 ├── prompt_manager.html      # 核心：学术论文 + 写作优化
 ├── writer.html              # 通用写作管理器（BMW M 设计）
 ├── humanizer.html           # 去 AI 味独立版（Apple 设计）

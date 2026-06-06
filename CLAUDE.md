@@ -4,36 +4,48 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-papro is a unified writing prompt tool — a single HTML application that helps users generate structured AI prompts. All features live in one file with a consistent Anthropic design system.
+知更·Paper is a unified writing prompt tool — a Preact application that helps users generate structured AI prompts. Features are organized as components with a consistent Anthropic design system.
 
 | File | Purpose |
 |------|---------|
-| `prompt_manager.html` | All-in-one prompt tool (论文 + 模板库 + 写作优化 + 综述工作流) |
+| `src/App.jsx` | Main component, tab switching + global state |
+| `src/store.js` | Global state (Preact Signals) |
+| `src/index.css` | Global styles (Anthropic design tokens) |
+| `src/data/*.js` | Template and pattern data |
+| `src/components/*.jsx` | Tab components |
+| `prompt_manager.html` | Original single-file version (legacy) |
 
 ## How to Run
 
-Open `prompt_manager.html` directly in a browser. No build step, no dependencies.
-
 ```bash
-python -m http.server 8080
-# Then visit http://localhost:8080/prompt_manager.html
+npm install
+npm run dev
+# Then visit http://localhost:5173
 ```
 
 ## Architecture
 
-Single-file HTML with inline CSS and vanilla JavaScript (~3300 lines).
+Preact + Vite with Preact Signals for state management.
 
-### prompt_manager.html
-- **Anthropic design system**: cream canvas `#faf9f5`, coral primary `#cc785c`, dark navy `#181715`
-- **6 tabs**: 论文参数, 大纲管理, 生成提示词, 写作优化, 模板库, 综述工作流
-- **论文参数**: title, venue, paper type, citation format, discipline, audience, writing style
-- **大纲管理**: drag-and-drop sections with word count sliders (`dragAllowed` flag guard)
-- **生成提示词**: system role + task instructions + paper info table + outline plan + style rules
-- **写作优化 (Humanizer)**: 24 AI writing patterns from Wikipedia, category filtering, intensity/tone/lang config, quality scoring (5 dimensions, /50)
-- **模板库**: 25 writing templates across 5 categories (academic, content, business, tech, translate), search, favorites, history, per-template config with `buildPrompt()`
-- **综述工作流**: 5-step workflow, CSV template, Pandoc commands
-- Theme: `html.dark` class with CSS custom properties, localStorage persistence
-- State: `sections` array for outline, `hzPatterns`/`hzSelected` for humanizer, `templates`/`tplConfigs` for template library
+### Components
+- **PaperParams**: 论文参数 (title, venue, paper type, citation format, discipline, audience, writing style)
+- **OutlineManager**: 大纲管理 (drag-and-drop sections with word count sliders)
+- **GeneratePrompt**: 生成提示词 (system role + task instructions + paper info table)
+- **Humanizer**: 写作优化 (24 AI writing patterns, category filtering, quality scoring)
+- **TemplateLibrary**: 模板库 (25 templates, search, favorites, history, buildPrompt)
+- **ReviewWorkflow**: 综述工作流 (5-step workflow, CSV template, Pandoc commands)
+
+### State Management (store.js)
+- Paper parameters: signals for all form fields
+- Outline: sections array signal + totalWords
+- Humanizer: hzSelected Set, hzIntensity, hzTone, hzLang, hzType
+- Template: tplFavorites, tplHistory, tplSelected
+- **Linkage**: pendingText signal for template→Humanizer connection
+
+### Data Files
+- `hzPatterns.js`: 24 AI writing patterns
+- `templates.js`: 25 template definitions
+- `tplConfigs.js`: Template fields + buildPrompt functions
 
 ## Design System
 
@@ -48,5 +60,4 @@ Anthropic Claude design tokens (defined in CSS custom properties):
 
 - All UI text is in Simplified Chinese.
 - No test suite, no linter, no CI/CD configured.
-- `.vscode/settings.json` contains only editor preferences.
 - `PRD.md` contains the product requirements.
