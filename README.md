@@ -4,6 +4,8 @@
 
 **学术论文智能写作助手**
 
+🌐 **官网：https://zgpaper.pages.dev/**
+
 配置参数 · 管理大纲 · 生成提示词 · 论文审阅 · 写作优化 · 写作指南
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-c2694f.svg)](LICENSE)
@@ -139,6 +141,10 @@ npm run preview  # 预览构建结果
    - Pages 项目 → **Custom domains** → 添加你的域名
    - 按提示在域名 DNS 添加 CNAME 记录指向 `papro.pages.dev`
 
+### 官网地址
+
+https://zgpaper.pages.dev/
+
 ### 方式二：直接上传
 
 ```bash
@@ -152,7 +158,7 @@ npm install -g wrangler
 wrangler login
 
 # 部署
-wrangler pages deploy dist --project-name=papro
+wrangler pages deploy dist --project-name=zgpaper
 ```
 
 ### 自动部署
