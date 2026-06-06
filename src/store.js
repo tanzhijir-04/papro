@@ -47,18 +47,7 @@ export const hzType = signal("general");
 export const hzExtra = signal("");
 export const hzCurrentCat = signal("all");
 
-// ── Template Library State ──
-export const tplCurrentCat = signal("all");
-export const tplSelected = signal(null);
-export const tplView = signal("browse");
-export const tplFavorites = signal(
-  JSON.parse(localStorage.getItem("tpl-favorites") || "[]")
-);
-export const tplHistory = signal(
-  JSON.parse(localStorage.getItem("tpl-history") || "[]")
-);
-
-// ── Template→Humanizer Linkage ──
+// ── Cross-tab Linkage (e.g. review→humanizer) ──
 export const pendingText = signal("");
 
 // ── Theme ──

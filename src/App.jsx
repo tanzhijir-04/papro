@@ -1,20 +1,17 @@
-import { useSignal } from "@preact/signals";
 import { currentTab, toggleTheme } from "./store.js";
 import { TabBar } from "./components/TabBar.jsx";
 import { PaperParams } from "./components/PaperParams.jsx";
 import { OutlineManager } from "./components/OutlineManager.jsx";
 import { GeneratePrompt } from "./components/GeneratePrompt.jsx";
+import { PaperReview } from "./components/PaperReview.jsx";
 import { Humanizer } from "./components/Humanizer.jsx";
-import { TemplateLibrary } from "./components/TemplateLibrary.jsx";
-import { ReviewWorkflow } from "./components/ReviewWorkflow.jsx";
 
 const TAB_COMPONENTS = {
   params: PaperParams,
   outline: OutlineManager,
   output: GeneratePrompt,
+  review: PaperReview,
   humanizer: Humanizer,
-  templates: TemplateLibrary,
-  workflow: ReviewWorkflow,
 };
 
 export function App() {
