@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { sendDirectChat, validateEndpoint } from "./directClient.js";
+import { sendChatMessages, sendDirectChat, validateEndpoint } from "./directClient.js";
 
 const endpoint = "https://api.openai.com/v1/chat/completions";
 
@@ -77,4 +77,26 @@ test("HTTP failures do not show provider response bodies", async () => {
     }),
     (error) => error.message.includes("401") && !error.message.includes("secret-key"),
   );
+});
+
+test("multi-turn messages use the same direct endpoint and do not add a proxy", async () => {
+  const calls = [];
+  await sendChatMessages({
+    endpoint,
+    model: "example-model",
+    apiKey: "secret-key",
+    messages: [
+      { role: "system", content: "Act as a topic adviser." },
+      { role: "user", content: "Find a topic." },
+      { role: "assistant", content: "What data do you have?" },
+      { role: "user", content: "Public data." },
+    ],
+    fetchImpl: async (...args) => {
+      calls.push(args);
+      return { ok: true, json: async () => ({ choices: [{ message: { content: "A feasible topic" } }] }) };
+    },
+  });
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0][0], endpoint);
+  assert.deepEqual(JSON.parse(calls[0][1].body).messages.map((message) => message.role), ["system", "user", "assistant", "user"]);
 });

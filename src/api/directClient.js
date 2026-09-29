@@ -29,14 +29,16 @@ function responseError(status) {
   return `模型服务返回 HTTP ${status}。请检查接口、模型与请求格式。`;
 }
 
-export async function sendDirectChat({ endpoint, model, apiKey, prompt, signal, fetchImpl = fetch }) {
+export async function sendChatMessages({ endpoint, model, apiKey, messages, signal, fetchImpl = fetch }) {
   const url = validateEndpoint(endpoint);
   const cleanModel = model.trim();
   const cleanKey = apiKey.trim();
-  const cleanPrompt = prompt.trim();
   if (!cleanModel) throw new Error("请填写模型 ID。");
   if (!cleanKey) throw new Error("请填写 API 密钥。");
-  if (!cleanPrompt) throw new Error("请先填写或导入提示词。");
+  if (!Array.isArray(messages) || !messages.length || messages.some((item) =>
+    !["system", "user", "assistant"].includes(item?.role) ||
+    typeof item.content !== "string" || !item.content.trim()
+  )) throw new Error("请先填写有效的对话内容。");
 
   let response;
   try {
@@ -53,7 +55,7 @@ export async function sendDirectChat({ endpoint, model, apiKey, prompt, signal, 
       },
       body: JSON.stringify({
         model: cleanModel,
-        messages: [{ role: "user", content: cleanPrompt }],
+        messages: messages.map(({ role, content }) => ({ role, content: content.trim() })),
         stream: false,
       }),
       signal,
@@ -86,4 +88,11 @@ export async function sendDirectChat({ endpoint, model, apiKey, prompt, signal, 
       totalTokens: Number.isFinite(data?.usage?.total_tokens) ? data.usage.total_tokens : null,
     },
   };
+}
+
+export function sendDirectChat({ prompt, ...options }) {
+  if (typeof prompt !== "string" || !prompt.trim()) {
+    throw new Error("请先填写或导入提示词。");
+  }
+  return sendChatMessages({ ...options, messages: [{ role: "user", content: prompt }] });
 }

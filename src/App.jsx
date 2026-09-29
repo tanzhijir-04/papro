@@ -8,6 +8,7 @@ import { PaperReview } from "./components/PaperReview.jsx";
 import { Humanizer } from "./components/Humanizer.jsx";
 import { WritingGuide } from "./components/WritingGuide.jsx";
 import { DirectApi } from "./components/DirectApi.jsx";
+import { TopicAgent } from "./components/TopicAgent.jsx";
 
 const TAB_COMPONENTS = {
   params: PaperParams,
@@ -15,6 +16,7 @@ const TAB_COMPONENTS = {
   output: GeneratePrompt,
   review: PaperReview,
   humanizer: Humanizer,
+  topic: TopicAgent,
   api: DirectApi,
 };
 
@@ -97,7 +99,7 @@ export function App() {
 
   return (
     <div
-      className={`app-layout${isOpen ? "" : " guide-closed"}${tab === "api" ? " api-layout" : ""}`}
+      className={`app-layout${isOpen ? "" : " guide-closed"}${tab === "api" || tab === "topic" ? " api-layout" : ""}`}
       ref={layoutRef}
       style={{ "--guide-w": (isOpen ? EXPANDED_W : COLLAPSED_W) + "px" }}
     >
@@ -115,7 +117,7 @@ export function App() {
               </h2>
             </div>
             <div className="header-badges" style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              {tab !== "api" && <>
+              {tab !== "api" && tab !== "topic" && <>
                 <span className="badge badge-a">
                   <i className="ti ti-file-text" aria-hidden="true"></i>版本 A
                 </span>

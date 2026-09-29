@@ -109,8 +109,8 @@ export function WritingGuide() {
           <h4 className="gs-st"><span className="gs-st-n">2</span>选题与文献</h4>
           <div className="gs-card">
             <h5><i className="ti ti-bulb" aria-hidden="true"></i> 怎么确定选题</h5>
-            <p>导师给了题目直接用。没有的话用 AI 帮你想：</p>
-            <div className="gs-code">我是[你的专业]的学生，需要写一篇[课程论文/毕业论文]，请推荐5个选题方向</div>
+            <p>导师给了题目可直接填写。还没定题时，可打开<strong>“选题助手”</strong>，输入学科、兴趣、可用资料和时间限制，比较候选方向并继续追问。</p>
+            <div className="gs-warn"><i className="ti ti-alert-triangle"></i><span>候选题目是构思建议，资料可得性、研究空白和导师要求仍需自己核实。</span></div>
           </div>
           <div className="gs-card">
             <h5><i className="ti ti-book" aria-hidden="true"></i> 收集参考文献</h5>

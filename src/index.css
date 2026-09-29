@@ -190,6 +190,8 @@ label {
 /* ── Inputs ── */
 input[type="text"],
 input[type="number"],
+input[type="url"],
+input[type="password"],
 select,
 textarea {
   width: 100%;
@@ -219,6 +221,8 @@ select {
 }
 input[type="text"]:focus,
 input[type="number"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus,
 select:focus,
 textarea:focus {
   border-color: var(--an-primary);
@@ -1944,10 +1948,32 @@ html.dark .gs-tip {
 .direct-guide code { background: var(--an-surface-2); border-radius: 4px; padding: 1px 4px; overflow-wrap: anywhere; }
 .direct-guide a { color: var(--an-primary); text-decoration: underline; }
 
+/* ── Guided topic selection ── */
+.topic-connection .direct-result-head { margin-bottom: 14px; }
+.topic-connection-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.topic-connection-grid > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; padding: 11px 13px; border-radius: var(--r-sm); background: var(--an-surface-2); }
+.topic-connection-grid span { color: var(--an-muted); font-size: 11px; }
+.topic-connection-grid strong { color: var(--an-ink); font-size: 13px; overflow-wrap: anywhere; }
+.topic-intro { margin: -7px 0 15px; }
+.topic-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+.topic-fields .field { min-width: 0; margin-bottom: 0; }
+.topic-wide { grid-column: 1 / -1; }
+.topic-turns { display: flex; flex-direction: column; gap: 13px; max-height: 700px; overflow: auto; padding: 3px 2px 14px; }
+.topic-turn { padding: 15px 17px; border-radius: var(--r-md); border: 1px solid var(--an-hairline); background: var(--an-surface-2); }
+.topic-turn.user { margin-left: min(9%, 68px); background: var(--an-primary-soft); }
+.topic-turn.assistant { margin-right: min(5%, 42px); }
+.topic-turn strong { color: var(--an-ink); font-size: 12px; }
+.topic-turn pre { margin: 7px 0 0; color: var(--an-body); white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: 13px; line-height: 1.75; user-select: text; }
+.topic-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 20px; }
+.topic-suggestions .btn { white-space: normal; text-align: left; font-size: 12px; }
+
 @media (max-width: 640px) {
   .direct-card { padding: 17px; }
   .direct-hero { padding: 20px; }
   .direct-grid { grid-template-columns: 1fr; gap: 0; }
   .direct-actions .btn-primary { width: 100%; }
   .direct-result-head { align-items: flex-start; }
+  .topic-connection-grid, .topic-fields { grid-template-columns: 1fr; }
+  .topic-wide { grid-column: auto; }
+  .topic-turn.user, .topic-turn.assistant { margin-left: 0; margin-right: 0; }
 }
