@@ -1,10 +1,11 @@
 import { useSignal } from "@preact/signals";
 import {
   paperTitle, paperVenue, paperType, paperTypeCustom, citationFmt,
-  version, discipline, researchDir, audience, audienceCustom,
+  version, discipline, researchDir, audience, audienceCustom, currentTab,
   coreArg, researchQ, writingStyle, constraint, totalWords, sections,
   showToast,
 } from "../store.js";
+import { pendingDirectPrompt } from "../api/memory.js";
 
 function getPaperType() {
   return paperType.value === "__custom__"
@@ -165,6 +166,9 @@ export function GeneratePrompt() {
           <div className="copy-row">
             <button className="btn" onClick={() => copyToClipboard(outputText.value)}>
               <i className="ti ti-copy" aria-hidden="true"></i> 复制全部
+            </button>
+            <button className="btn" onClick={() => { pendingDirectPrompt.value = outputText.value; currentTab.value = "api"; }}>
+              <i className="ti ti-plug-connected" aria-hidden="true"></i> 在本页使用
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "preact/hooks";
 import { pendingText, currentTab, showToast } from "../store.js";
 import { hzPatterns } from "../data/hzPatterns.js";
+import { pendingDirectPrompt } from "../api/memory.js";
 
 const DIMENSIONS = [
   { id: "logic", name: "逻辑结构", desc: "论文整体逻辑是否严密，各章节衔接是否自然，论证链条是否完整" },
@@ -306,6 +307,9 @@ export function PaperReview() {
           <div className="copy-row">
             <button className="btn" onClick={handleCopy}>
               <i className="ti ti-copy" aria-hidden="true"></i> 复制全部
+            </button>
+            <button className="btn" onClick={() => { pendingDirectPrompt.value = outputText; currentTab.value = "api"; }}>
+              <i className="ti ti-plug-connected" aria-hidden="true"></i> 在本页使用
             </button>
             <button className="btn" onClick={handleSendToHumanizer} style={{ color: "var(--an-primary)", borderColor: "var(--an-primary)" }}>
               <i className="ti ti-feather" aria-hidden="true"></i> 发送到写作优化

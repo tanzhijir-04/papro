@@ -99,7 +99,7 @@ export function WritingGuide() {
           <div className="gs-card">
             <h5><i className="ti ti-message" aria-hidden="true"></i> 什么是"提示词"</h5>
             <p><strong>提示词就是你给 AI 下的"指令"。</strong>写得好，AI 给你高质量论文；写得差，给你一堆废话。</p>
-            <p>知更·Paper 帮你<strong>自动生成高质量提示词</strong>，你只需复制粘贴。</p>
+            <p>知更·Paper 帮你生成提示词。你可以复制到自己的 AI 工具，也可以在“API 直连”页使用自己提供的密钥发送。</p>
             <div className="gs-tip"><i className="ti ti-lightbulb"></i>提示词就像"给 AI 的考试大纲"——越详细，论文越符合要求。</div>
           </div>
         </section>
@@ -176,8 +176,7 @@ export function WritingGuide() {
               <li>切换到<strong>"生成提示词"</strong>标签</li>
               <li>检查配置是否齐全，缺的回去补齐</li>
               <li>点击<strong>"生成提示词"</strong></li>
-              <li>点击<strong>"复制全部"</strong></li>
-              <li>打开 AI 工具，<strong>粘贴</strong>到输入框，按 Enter</li>
+              <li>点击<strong>“复制全部”</strong>，粘贴到自己的 AI 工具；或点击<strong>“在本页使用”</strong>，按 API 直连教程填写密钥并发送</li>
             </ol>
             <div className="gs-warn"><i className="ti ti-alert-triangle"></i><span>论文超过 10000 字 AI 可能写不完，输入<strong>"继续"</strong>即可。</span></div>
           </div>
@@ -231,7 +230,7 @@ export function WritingGuide() {
             </div>
             <div className="gs-faq">
               <div className="gs-faq-q">知更·Paper 收费吗？</div>
-              <div className="gs-faq-a">不收费，所有功能本地运行。</div>
+              <div className="gs-faq-a">本站免费。若启用 API 直连，模型服务商可能按其规则收费；提示词生成仍在本机完成。</div>
             </div>
           </div>
         </section>

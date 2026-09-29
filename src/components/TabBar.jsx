@@ -6,6 +6,7 @@ const TABS = [
   { id: "output", icon: "ti-code", label: "生成提示词" },
   { id: "review", icon: "ti-search", label: "论文审阅" },
   { id: "humanizer", icon: "ti-feather", label: "写作优化" },
+  { id: "api", icon: "ti-plug-connected", label: "API 直连" },
 ];
 
 export function TabBar() {

@@ -10,7 +10,7 @@
 
 📄 [下一版产品改版方案](docs/产品改版方案.md)
 
-本站只在浏览器中组装可复制的提示词，不接入 AI 模型或调用大模型 API。用户需自行将提示词粘贴到外部 AI 工具中使用。
+默认使用方式仍是在浏览器中组装提示词，再复制到外部 AI 工具。`DEV/2.0` 分支新增可选的“API 直连”：连接设置只提供 OpenAI 标准 Chat Completions 协议，用户填写完整 HTTPS 地址、模型 ID 和密钥，由浏览器直接请求该地址，不经过本站代理。详见 [API 直连使用指南](docs/API直连使用指南.md)。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-c2694f.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/❤️_赞助-爱发电-c2694f.svg)](https://ifdian.net/a/tanz666/plan)
@@ -28,6 +28,7 @@
 | **生成提示词** | 系统角色 + 任务指令 + 论文信息表 + 大纲规划 + 语言规范，一键复制 |
 | **论文审阅** | 6 维度审阅（逻辑/规范/语言/AIGC/论证/格式），4 级论文等级，生成结构化审阅提示词 |
 | **写作优化** | 按 24 种常见表达模式和语调等设置，生成修改提示词 |
+| **API 直连（可选）** | 仅提供 OpenAI 标准 Chat Completions 协议，用户填写 HTTPS 接口、模型 ID 和 API 密钥，在本页发送提示词并查看回答；CORS 不支持时仍可复制提示词使用 |
 | **写作指南** | 7 步完整教程 + FAQ，右侧栏常驻显示，支持折叠/展开和拖拽调宽 |
 
 ### 双版本模式
@@ -62,7 +63,7 @@ npm run dev
 | 构建 | [Vite](https://vitejs.dev/) |
 | 字体 | Noto Serif SC（标题）+ Noto Sans SC（正文）+ JetBrains Mono（代码） |
 | 图标 | [Tabler Icons](https://tabler.io/icons) + 品牌 SVG（OpenAI/Anthropic/DeepSeek） |
-| 持久化 | localStorage（主题偏好、指南宽度、阅读进度） |
+| 持久化 | localStorage（主题、指南和非敏感 API 设置）；IndexedDB（用户选择保存的本机调用记录）；API 密钥仅保留在当前页面内存 |
 
 ## 项目结构
 

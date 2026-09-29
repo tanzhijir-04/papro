@@ -5,6 +5,7 @@ import {
   hzCurrentCat, pendingText, currentTab, showToast, paintRange,
 } from "../store.js";
 import { hzPatterns, hzCategories } from "../data/hzPatterns.js";
+import { pendingDirectPrompt } from "../api/memory.js";
 
 const TONE_OPTIONS = [
   { value: "neutral", label: "中性客观" },
@@ -411,6 +412,9 @@ export function Humanizer() {
           <div className="copy-row">
             <button className="btn" onClick={handleCopy}>
               <i className="ti ti-copy" aria-hidden="true"></i> 复制全部
+            </button>
+            <button className="btn" onClick={() => { pendingDirectPrompt.value = outputText; currentTab.value = "api"; }}>
+              <i className="ti ti-plug-connected" aria-hidden="true"></i> 在本页使用
             </button>
           </div>
         </div>

@@ -1899,3 +1899,55 @@ html.dark .gs-tip {
   border-color: var(--an-tip-border);
   color: var(--an-tip-text);
 }
+
+/* ── Browser-direct API workspace ── */
+.direct-api { display: flex; flex-direction: column; gap: 18px; padding-bottom: 48px; }
+.api-layout .app-main > .app-shell { max-width: 920px; }
+.api-layout .app-guide, .api-layout .app-resize, .api-layout .guide-toggle, .api-layout .sponsor-float { display: none; }
+.direct-hero { padding: 24px 26px; border-radius: var(--r-lg); background: var(--an-output-bg); color: var(--an-output-fg); }
+.direct-eyebrow { color: var(--an-teal); font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+.direct-hero h3 { color: #fff; font-size: clamp(22px, 3vw, 32px); margin: 8px 0 4px; }
+.direct-hero p { max-width: 680px; font-size: 13px; color: var(--an-output-fg); }
+.direct-note { padding: 14px 18px; border: 1px solid var(--an-teal); border-radius: var(--r-md); background: var(--an-teal-soft); font-size: 13px; line-height: 1.75; }
+.direct-note strong { color: var(--an-ink); }
+.direct-card { padding: 22px; }
+.direct-protocol { display: inline-flex; margin: 4px 0 16px; padding: 7px 12px; border-radius: var(--r-pill); background: var(--an-teal-soft); color: var(--an-ink); font-size: 12px; font-weight: 700; }
+.direct-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin: 12px 0 16px; }
+.direct-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.direct-grid .field { min-width: 0; }
+.direct-help { color: var(--an-muted); font-size: 12px; line-height: 1.65; margin-top: 6px; }
+.direct-destination { margin: 2px 0 14px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--an-surface-2); font-size: 13px; overflow-wrap: anywhere; }
+.direct-destination strong { color: var(--an-primary); }
+.direct-check { display: flex; align-items: flex-start; gap: 9px; margin: 12px 0; font-size: 13px; line-height: 1.6; cursor: pointer; }
+.direct-check input { width: 16px; height: 16px; margin-top: 3px; flex-shrink: 0; accent-color: var(--an-primary); }
+.direct-clear-key { margin-top: 4px; }
+.direct-actions .btn-primary { width: auto; min-width: 210px; }
+.direct-actions button:disabled { opacity: .55; cursor: wait; }
+.direct-error, .direct-notice { border-radius: var(--r-sm); padding: 11px 13px; margin-top: 12px; font-size: 13px; }
+.direct-error { background: rgba(196,74,74,.1); color: var(--an-error); border: 1px solid rgba(196,74,74,.25); }
+.direct-notice { background: var(--an-teal-soft); color: var(--an-body); border: 1px solid rgba(74,158,142,.25); }
+.direct-result { margin-top: 22px; border-top: 1px solid var(--an-hairline); padding-top: 18px; }
+.direct-result-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; }
+.direct-result-head .section-title { margin-bottom: 0; }
+.direct-result pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: inherit; font-size: 13px; line-height: 1.8; background: var(--an-surface-2); color: var(--an-ink); border-radius: var(--r-sm); padding: 16px; max-height: 520px; overflow: auto; user-select: text; }
+.direct-empty { font-size: 13px; color: var(--an-muted); padding: 12px 0; }
+.direct-history { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; max-height: 480px; overflow: auto; }
+.direct-history-item { border: 1px solid var(--an-hairline); border-radius: var(--r-sm); padding: 13px; font-size: 12px; }
+.direct-history-item strong { color: var(--an-ink); }
+.direct-history-item p { color: var(--an-muted); margin-top: 5px; overflow-wrap: anywhere; }
+.direct-history-item .direct-actions { margin: 9px 0 0; }
+.direct-history-item .btn { padding: 6px 10px; font-size: 12px; }
+.direct-guide summary { cursor: pointer; color: var(--an-ink); font-weight: 700; }
+.direct-guide ol { margin: 18px 0 0 22px; }
+.direct-guide li { margin: 9px 0; font-size: 13px; line-height: 1.8; }
+.direct-guide p { margin-top: 13px; font-size: 13px; line-height: 1.8; }
+.direct-guide code { background: var(--an-surface-2); border-radius: 4px; padding: 1px 4px; overflow-wrap: anywhere; }
+.direct-guide a { color: var(--an-primary); text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .direct-card { padding: 17px; }
+  .direct-hero { padding: 20px; }
+  .direct-grid { grid-template-columns: 1fr; gap: 0; }
+  .direct-actions .btn-primary { width: 100%; }
+  .direct-result-head { align-items: flex-start; }
+}
