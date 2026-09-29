@@ -1,4 +1,5 @@
 export const DEFAULT_ENDPOINT = "https://api.openai.com/v1/chat/completions";
+export const CONNECTION_TEST_PROMPT = "请只回复：连接成功";
 
 export function validateEndpoint(value) {
   let url;
@@ -95,4 +96,8 @@ export function sendDirectChat({ prompt, ...options }) {
     throw new Error("请先填写或导入提示词。");
   }
   return sendChatMessages({ ...options, messages: [{ role: "user", content: prompt }] });
+}
+
+export function testDirectConnection(options) {
+  return sendDirectChat({ ...options, prompt: CONNECTION_TEST_PROMPT });
 }

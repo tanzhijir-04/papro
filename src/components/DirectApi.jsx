@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { DEFAULT_ENDPOINT, sendDirectChat, validateEndpoint } from "../api/directClient.js";
+import { CONNECTION_TEST_PROMPT, DEFAULT_ENDPOINT, sendDirectChat, testDirectConnection, validateEndpoint } from "../api/directClient.js";
 import { clearRuns, deleteRun, listRuns, saveRun } from "../api/localHistory.js";
 import { pendingDirectPrompt, sessionApiKey } from "../api/memory.js";
 
@@ -21,6 +21,8 @@ export function DirectApi() {
   const [saveLocally, setSaveLocally] = useState(true);
   const [runs, setRuns] = useState([]);
   const [busy, setBusy] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState(null);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const controllerRef = useRef(null);
@@ -42,14 +44,43 @@ export function DirectApi() {
     setEndpoint(value);
     writeSetting("zgpaper-api-endpoint", value);
     setConfirmed(false);
+    setTestResult(null);
   }
 
   function updateModel(value) {
     setModel(value);
     writeSetting("zgpaper-api-model", value);
+    setTestResult(null);
+  }
+
+  async function handleTest() {
+    if (controllerRef.current || busy || testing) return;
+    setTestResult(null);
+    if (!confirmed) {
+      setTestResult({ ok: false, message: "请先核对并确认请求域名。" });
+      return;
+    }
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    setTesting(true);
+    const started = performance.now();
+    try {
+      const result = await testDirectConnection({
+        endpoint, model, apiKey: sessionApiKey.value, signal: controller.signal,
+      });
+      const elapsed = Math.round(performance.now() - started);
+      const tokens = result.usage.totalTokens == null ? "" : `，服务商报告用量 ${result.usage.totalTokens} Token`;
+      setTestResult({ ok: true, message: `连接成功：${destination} 已返回模型回答。本次耗时 ${elapsed} 毫秒${tokens}；仅代表本次请求成功。` });
+    } catch (err) {
+      setTestResult({ ok: false, message: `测试未通过：${err.message}` });
+    } finally {
+      controllerRef.current = null;
+      setTesting(false);
+    }
   }
 
   async function handleSend() {
+    if (controllerRef.current || busy || testing) return;
     setError("");
     setNotice("");
     if (!confirmed) {
@@ -117,11 +148,11 @@ export function DirectApi() {
       <div className="direct-hero">
         <div className="direct-eyebrow">BYOK · 自带密钥</div>
         <h3>浏览器直连模型</h3>
-        <p>你填写密钥和接口地址，点击发送后，浏览器直接向该地址请求。本站不设代理服务器。</p>
+        <p>你填写密钥和接口地址，主动测试或发送后，浏览器直接向该地址请求。本站不设代理服务器。</p>
       </div>
 
       <div className="direct-note" role="note">
-        <strong>数据去向</strong>：密钥与本次提示词会发送到你确认的模型服务商；该服务商可能按自己的规则记录请求。本站仅在当前页面内存中保留密钥，刷新即清除。成功请求的提示词和回答默认只保存在本机浏览器，可在下方关闭或删除。
+        <strong>数据去向</strong>：密钥与本次测试消息或提示词会发送到你确认的模型服务商；该服务商可能按自己的规则记录请求。本站仅在当前页面内存中保留密钥，刷新即清除。普通提示词请求的内容和回答默认只保存在本机浏览器，可在下方关闭或删除。
       </div>
 
       <div className="card direct-card">
@@ -129,7 +160,7 @@ export function DirectApi() {
         <div className="direct-protocol">OpenAI 标准接口 · Chat Completions</div>
         <div className="field">
           <label htmlFor="direct-endpoint">完整 API 地址</label>
-          <input id="direct-endpoint" type="url" spellcheck="false" value={endpoint}
+          <input id="direct-endpoint" type="url" spellcheck="false" value={endpoint} disabled={busy || testing}
             onInput={(event) => updateEndpoint(event.currentTarget.value)}
             placeholder="https://服务商域名/.../chat/completions" />
           <div className="direct-help">只接受 HTTPS 且以 /chat/completions 结尾的地址。不会自动切换到代理。</div>
@@ -137,41 +168,49 @@ export function DirectApi() {
         <div className="direct-grid">
           <div className="field">
             <label htmlFor="direct-model">模型 ID</label>
-            <input id="direct-model" value={model} spellcheck="false"
+            <input id="direct-model" type="text" value={model} spellcheck="false" disabled={busy || testing}
               onInput={(event) => updateModel(event.currentTarget.value)}
               placeholder="从服务商模型列表复制准确 ID" />
           </div>
           <div className="field">
             <label htmlFor="direct-key">API 密钥（仅本页内存）</label>
-            <input id="direct-key" type="password" value={apiKey} autocomplete="off"
-              onInput={(event) => { sessionApiKey.value = event.currentTarget.value; }}
+            <input id="direct-key" type="password" value={apiKey} autocomplete="off" disabled={busy || testing}
+              onInput={(event) => { sessionApiKey.value = event.currentTarget.value; setTestResult(null); }}
               placeholder="粘贴你的专用 API 密钥" />
           </div>
         </div>
         <div className="direct-destination">本次请求目的地：<strong>{destination}</strong></div>
         <label className="direct-check">
-          <input type="checkbox" checked={confirmed} onChange={(event) => setConfirmed(event.currentTarget.checked)} />
+          <input type="checkbox" checked={confirmed} disabled={busy || testing} onChange={(event) => { setConfirmed(event.currentTarget.checked); setTestResult(null); }} />
           <span>我已核对这个域名属于目标服务商，了解密钥和提示词会直接发给它。</span>
         </label>
-        <button className="btn direct-clear-key" type="button" onClick={() => { sessionApiKey.value = ""; setNotice("本页密钥已清除。"); }}>
-          清除本页密钥
-        </button>
+        <div className="direct-actions direct-connection-actions">
+          <button className="btn-primary" type="button" disabled={busy || testing} onClick={handleTest}>
+            {testing ? "正在测试…" : "测试连通性"}
+          </button>
+          {testing && <button className="btn" type="button" onClick={() => controllerRef.current?.abort()}>取消测试</button>}
+          <button className="btn direct-clear-key" type="button" disabled={busy || testing} onClick={() => { sessionApiKey.value = ""; setTestResult(null); setNotice("本页密钥已清除。"); }}>
+            清除本页密钥
+          </button>
+        </div>
+        <p className="direct-help">测试消息：“{CONNECTION_TEST_PROMPT}”。它只发往上方域名，可能产生 API 费用；测试请求和回答不保存到本机使用记录。</p>
+        {testResult && <div className={testResult.ok ? "direct-notice" : "direct-error"} role={testResult.ok ? "status" : "alert"}>{testResult.message}</div>}
       </div>
 
       <div className="card direct-card">
         <div className="section-title">2 · 提示词与回答</div>
         <div className="field">
           <label htmlFor="direct-prompt">将发送的提示词</label>
-          <textarea id="direct-prompt" rows={10} value={prompt}
+          <textarea id="direct-prompt" rows={10} value={prompt} disabled={busy}
             onInput={(event) => setPrompt(event.currentTarget.value)}
             placeholder="先在“生成提示词”页创建，再点“在本页使用”；也可以直接粘贴提示词。" />
         </div>
         <label className="direct-check">
-          <input type="checkbox" checked={saveLocally} onChange={(event) => setSaveLocally(event.currentTarget.checked)} />
+          <input type="checkbox" checked={saveLocally} disabled={busy} onChange={(event) => setSaveLocally(event.currentTarget.checked)} />
           <span>把本次提示词、回答及用量信息保存在此浏览器（不保存密钥）</span>
         </label>
         <div className="direct-actions">
-          <button className="btn-primary" type="button" disabled={busy} onClick={handleSend}>
+          <button className="btn-primary" type="button" disabled={busy || testing} onClick={handleSend}>
             {busy ? "等待模型回答…" : "直接发送给目标服务商"}
           </button>
           {busy && <button className="btn" type="button" onClick={() => controllerRef.current?.abort()}>取消请求</button>}
@@ -218,7 +257,8 @@ export function DirectApi() {
           <li><strong>申请专用密钥。</strong>在目标模型服务商官网开通 API，创建一个单独用于本站的密钥。优先设置较小的额度、使用范围和有效期。OpenAI 用户可从 <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">官方密钥页面</a>创建。</li>
           <li><strong>填写完整接口地址。</strong>官方 OpenAI 示例为 <code>https://api.openai.com/v1/chat/completions</code>。使用相同协议的服务请查其官方文档。先核对域名，再勾选确认框。</li>
           <li><strong>填写模型 ID。</strong>从服务商当前模型列表复制准确名称；ChatGPT 订阅与 API 额度通常分开管理，具体以服务商账单页面为准。</li>
-          <li><strong>粘贴密钥并发送。</strong>先使用一条不含敏感资料的短提示词。每次点击发送都可能产生 API 费用；本站没有测试连接时使用免费代理。</li>
+          <li><strong>测试连通性。</strong>核对域名并粘贴密钥后，点击“测试连通性”。本站只向当前接口发送固定短消息，不使用论文内容，也不写入本机记录；测试仍可能产生费用。</li>
+          <li><strong>发送提示词。</strong>连接成功后检查将要发送的全文，再点击发送。每次点击都可能产生 API 费用；本站不会改走代理。</li>
           <li><strong>管理本机记录。</strong>可关闭本机保存、逐条删除或清空全部。密钥不会进入记录；刷新页面后需重新输入。</li>
         </ol>
         <p><strong>连接失败：</strong>401 通常是密钥问题，404 常见于地址或模型 ID，429 可能是额度或限流。若出现 CORS / 网络错误，说明浏览器无法直接使用该服务商的接口；本站不会绕道自己的服务器。请换用服务商明确支持浏览器直连的接口，或继续使用“复制提示词”模式。</p>
