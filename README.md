@@ -8,6 +8,8 @@
 
 配置参数 · 管理大纲 · 生成提示词 · 论文审阅 · 写作优化 · 写作指南
 
+📄 [下一版产品改版方案](docs/产品改版方案.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-c2694f.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/❤️_赞助-爱发电-c2694f.svg)](https://ifdian.net/a/tanz666/plan)
 
